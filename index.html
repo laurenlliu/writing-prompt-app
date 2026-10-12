@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing Prompt App Designs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap">
+<style>
+  body { margin: 0; background: #F3EBDD; color: #3A2E2A; font-family: 'DM Sans', sans-serif; }
+  header { padding: 40px 24px 8px; max-width: 1200px; margin: 0 auto; }
+  h1 { font-family: Fraunces, serif; font-size: 36px; margin: 0 0 8px; }
+  p { margin: 0; color: #6B5A52; }
+  h2 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: #6B5A52; margin: 32px 0 16px; }
+  main { max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; }
+  .row { display: flex; flex-wrap: wrap; gap: 32px; }
+  figure { margin: 0; }
+  figcaption { font-weight: 700; margin-bottom: 10px; }
+  iframe { width: 390px; height: 844px; border: 0; border-radius: 28px; background: #FBF7EE; box-shadow: 0 2px 12px rgba(58,46,42,.12); max-width: calc(100vw - 48px); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Writing Prompt App</h1>
+  <p>Screen designs. Each screen works: tap the buttons and options to try it out.</p>
+</header>
+<main>
+  <h2>Onboarding</h2>
+  <div class="row">
+    <figure><figcaption>1. Main goal</figcaption><iframe src="screens/onboarding-1-goal.html" title="Onboarding question 1"></iframe></figure>
+    <figure><figcaption>2. Topics</figcaption><iframe src="screens/onboarding-2-topics.html" title="Onboarding question 2"></iframe></figure>
+    <figure><figcaption>3. Writing help</figcaption><iframe src="screens/onboarding-3-writing-help.html" title="Onboarding question 3"></iframe></figure>
+  </div>
+  <h2>Main app</h2>
+  <div class="row">
+    <figure><figcaption>Home</figcaption><iframe src="screens/home.html" title="Home"></iframe></figure>
+    <figure><figcaption>Pick a challenge</figcaption><iframe src="screens/pick-a-challenge.html" title="Pick a challenge"></iframe></figure>
+    <figure><figcaption>Write</figcaption><iframe src="screens/write.html" title="Write"></iframe></figure>
+    <figure><figcaption>Write, word bank open</figcaption><iframe src="screens/write-word-bank-open.html" title="Write with word bank open"></iframe></figure>
+    <figure><figcaption>Challenge complete</figcaption><iframe src="screens/challenge-complete.html" title="Challenge complete"></iframe></figure>
+  </div>
+</main>
+</body>
+</html>
