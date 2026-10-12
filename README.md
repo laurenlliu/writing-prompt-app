@@ -27,13 +27,15 @@ Option boxes start with just a colored outline. When you tap one, it fills in wi
 
 ## Main app
 
-| Home | Pick a challenge | Write |
+| Home | Write | Write, word bank open |
 | --- | --- | --- |
-| ![Home](images/home.png) | ![Pick a challenge](images/pick-a-challenge.png) | ![Write](images/write.png) |
+| ![Home](images/home.png) | ![Write](images/write.png) | ![Word bank open](images/write-word-bank-open.png) |
 
-| Write, word bank open | Challenge complete |
-| --- | --- |
-| ![Word bank open](images/write-word-bank-open.png) | ![Challenge complete](images/challenge-complete.png) |
+| Challenge complete |
+| --- |
+| ![Challenge complete](images/challenge-complete.png) |
+
+Coming next: the Challenge mode screen, where you see today's prompt and pick Easy, Medium or Hard.
 
 ## How the Write screen should work
 
