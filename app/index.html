@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Writing Prompt App</title>
+<meta name="theme-color" content="#FBF7EE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- HOME -->
+  <section class="screen" data-screen="home">
+    <nav class="tabs" aria-label="Main">
+      <a href="#home" class="tab is-active" aria-current="page">Journal</a>
+      <a href="#choose" class="tab" id="write-tab">Write</a>
+      <a href="#choose" class="tab">Challenge mode</a>
+    </nav>
+
+    <div class="row">
+      <div class="streak card bg-orange">
+        <span class="big" id="streak-count">0</span>
+        <span>day streak</span>
+      </div>
+      <a href="#choose" class="btn bg-yellow grow" id="daily-btn">Complete daily challenge</a>
+    </div>
+
+    <div class="tiles">
+      <button class="tile bg-pink" data-soon>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>
+        Explore prompts
+      </button>
+      <button class="tile bg-orange" data-soon>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        Memories
+      </button>
+      <button class="tile bg-yellow" data-soon>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        See progress
+      </button>
+      <button class="tile bg-pink" data-soon>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        Update profile
+      </button>
+    </div>
+
+    <div class="recent card bg-yellow">
+      <h2>Recent projects</h2>
+      <div id="recent-list" class="recent-list"></div>
+    </div>
+  </section>
+
+  <!-- MAKE A CHOICE -->
+  <section class="screen" data-screen="choose" hidden>
+    <a href="#home" class="back">‹ back</a>
+    <h1 class="title center">Make a<br>Choice!</h1>
+
+    <div class="group">
+      <h2 class="label">Difficulty</h2>
+      <div class="opts cols-3">
+        <button class="opt" data-group="level" data-value="easy" data-color="pink">Easy</button>
+        <button class="opt" data-group="level" data-value="medium" data-color="yellow">Medium</button>
+        <button class="opt" data-group="level" data-value="hard" data-color="orange">Hard</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2 class="label">Prompt</h2>
+      <div class="opts cols-2">
+        <button class="opt tall" data-group="promptType" data-value="normal" data-color="orange">Normal prompt</button>
+        <button class="opt tall" data-group="promptType" data-value="challenge" data-color="pink">Challenge mode prompt</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2 class="label">Word bank</h2>
+      <div class="opts cols-3">
+        <button class="opt tall" data-group="bank" data-value="easy" data-color="yellow">Easy word bank</button>
+        <button class="opt tall" data-group="bank" data-value="medium" data-color="orange">Medium word bank</button>
+        <button class="opt tall" data-group="bank" data-value="hard" data-color="pink">Hard word bank</button>
+      </div>
+    </div>
+
+    <p class="hint center" id="level-hint"></p>
+    <button class="btn bg-yellow push-down self-center" id="start-btn">Start writing</button>
+  </section>
+
+  <!-- PROMPT -->
+  <section class="screen center-screen" data-screen="prompt" hidden>
+    <p class="muted" id="prompt-label"></p>
+    <h1 class="title center" id="prompt-text"></h1>
+    <div class="row stretch">
+      <button class="btn bg-orange grow" id="respin-btn">Re-spin prompt</button>
+      <button class="btn bg-pink grow" id="continue-btn">Continue using prompt</button>
+    </div>
+    <p class="hint center" id="respins-left"></p>
+  </section>
+
+  <!-- WRITE -->
+  <section class="screen write-screen" data-screen="write" hidden>
+    <div class="toolbar">
+      <button class="chip bg-pink" id="save-later">Save for later</button>
+      <div class="chip bg-yellow count" aria-live="polite"><small>Word count</small><b id="word-count">0</b></div>
+      <div class="chip bg-pink timer" id="timer" aria-label="Time left" hidden>10:00</div>
+      <button class="chip bg-orange" id="bank-btn">Word bank</button>
+      <button class="chip outline" id="prompt-btn">Prompt</button>
+    </div>
+
+    <div class="editor">
+      <div class="highlights" id="highlights" aria-hidden="true"></div>
+      <textarea id="story" placeholder="Type here, start writing..." aria-label="Your story"></textarea>
+    </div>
+    <p class="hint" id="goal-line"></p>
+
+    <div class="row between">
+      <a href="#choose" class="btn bg-yellow">Switch levels</a>
+      <button class="btn bg-orange" id="done-btn">Done writing</button>
+    </div>
+  </section>
+
+  <!-- CHALLENGE COMPLETE -->
+  <section class="screen center-screen" data-screen="done" hidden>
+    <h1 class="title center big-title">Congrats,<br>you've finished<br>today's challenge!</h1>
+    <a href="#home" class="btn bg-pink pill">Return to home</a>
+  </section>
+
+</main>
+
+<!-- WORD BANK POPUP -->
+<div class="overlay" id="bank-popup" hidden>
+  <div class="popup bg-yellow" role="dialog" aria-modal="true" aria-labelledby="bank-title">
+    <div class="popup-head">
+      <span></span>
+      <h2 id="bank-title">Word bank</h2>
+      <button class="close" data-close aria-label="Close word bank">×</button>
+    </div>
+    <div class="word-grid" id="word-grid"></div>
+    <p class="hint center" id="bank-hint"></p>
+  </div>
+</div>
+
+<!-- PROMPT POPUP -->
+<div class="overlay" id="prompt-popup" hidden>
+  <div class="popup bg-orange" role="dialog" aria-modal="true" aria-labelledby="prompt-popup-title">
+    <div class="popup-head">
+      <span></span>
+      <h2 id="prompt-popup-title">Prompt</h2>
+      <button class="close" data-close aria-label="Close prompt">×</button>
+    </div>
+    <p class="popup-prompt" id="popup-prompt"></p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

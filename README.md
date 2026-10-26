@@ -4,6 +4,27 @@ Designs for a personal writing app that gives you a daily writing prompt, with s
 
 To try the screens, open `index.html` in a browser (or turn on GitHub Pages for this repo). Every screen is a plain HTML file in `screens/`, and the pictures below are in `images/`.
 
+## The working app
+
+Try it here: **https://laurenlliu.github.io/writing-prompt-app/app/** (open it on a phone).
+
+What works so far:
+
+- Home shows your real streak and your recent entries.
+- Make a choice, then a prompt (with 3 re-spins a day), then the Write screen.
+- The Write screen counts your words, underlines word bank words as you use them, and crosses them out in the word bank.
+- Hard mode has a 10 minute timer. Medium and Hard have a word count minimum.
+- Done writing checks that you used at least 3 word bank words, then saves your entry.
+- Save for later keeps your story, and the home screen lets you continue it.
+- Everything is saved on the phone you use, so nothing needs an account yet.
+
+Files in `app/`:
+
+- `index.html`: all the screens.
+- `styles.css`: colors, fonts and button styles (change a color once at the top and every screen updates).
+- `data.js`: **the prompts and word bank lists. Replace these with your own!**
+- `app.js`: how everything works. The rules (words per level, word minimums, timer length, re-spins per day) are at the top.
+
 ## Colors and fonts
 
 | Use | Color |
