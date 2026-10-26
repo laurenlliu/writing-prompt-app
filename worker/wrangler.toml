@@ -1,0 +1,8 @@
+# Only needed if you deploy from the command line with `npx wrangler deploy`.
+# The dashboard steps in SETUP-AI.md don't use this file.
+name = "writing-prompts"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[ai]
+binding = "AI"
