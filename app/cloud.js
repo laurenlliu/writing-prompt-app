@@ -21,7 +21,7 @@
 
   const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const KEYS = ['wpa.entries', 'wpa.profile', 'wpa.respins'];   // what gets saved to the account
-  let auth = null, db = null, user = null;
+  let auth = null, db = null, user = null, ready = false;
   const listeners = [];
 
   function loadScript(src) {
@@ -34,6 +34,8 @@
     await Promise.all([loadScript(SDK + 'firebase-auth-compat.js'), loadScript(SDK + 'firebase-firestore-compat.js')]);
     firebase.initializeApp(FIREBASE_CONFIG);
     auth = firebase.auth(); db = firebase.firestore();
+    ready = true;
+    auth.getRedirectResult().catch(() => {});
     auth.onAuthStateChanged(async (u) => {
       user = u;
       if (u) await pull();
@@ -77,8 +79,16 @@
   window.Cloud = {
     get enabled() { return !!FIREBASE_CONFIG; },
     get user() { return user; },
+    get ready() { return ready; },
     onChange(fn) { listeners.push(fn); },
-    signInWithGoogle() { return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); },
+    signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      // Popups don't work in some installed (home screen) apps, so fall back to a full-page redirect
+      return auth.signInWithPopup(provider).catch((e) => {
+        if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment', 'auth/web-storage-unsupported'].includes(e.code)) return auth.signInWithRedirect(provider);
+        throw e;
+      });
+    },
     signInWithEmail(email, password) { return auth.signInWithEmailAndPassword(email, password); },
     createAccount(email, password) { return auth.createUserWithEmailAndPassword(email, password); },
     resetPassword(email) { return auth.sendPasswordResetEmail(email); },

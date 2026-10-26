@@ -202,3 +202,8 @@ a.tile { text-decoration: none; }
 .word-def b { font-size: 17px; }
 .word-def i { color: var(--muted); margin-left: 4px; }
 .word-def p { margin: 6px 0 0; }
+
+/* ---------- Sign in (temporary test screen) ---------- */
+.signin-box { display: flex; flex-direction: column; gap: 16px; }
+.signin-box .card p { margin: 4px 0; }
+#signin-link { align-self: center; color: var(--muted); font-size: 15px; text-decoration: underline; }

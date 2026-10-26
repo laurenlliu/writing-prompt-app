@@ -204,6 +204,40 @@
       <div class="b-tile bg-pink"><span class="b-big md" id="p-words">0</span><span class="b-label">words typed</span></div>
       <div class="b-tile bg-yellow"><span class="b-label">Favorite entries</span><span aria-hidden="true">›</span></div>
     </div>
+
+    <!-- TEMPORARY: link to the test sign-in screen until the real one is designed -->
+    <a href="#signin" class="link-btn center" id="signin-link">Sign in to save your writing</a>
+  </section>
+
+  <!-- ===================== SIGN IN (TEMPORARY, for testing until the real screen is drawn) ===================== -->
+  <section class="screen" data-screen="signin" hidden>
+    <a href="#profile" class="back">‹ go back</a>
+    <h1 class="title center">Sign in</h1>
+    <p class="muted center">Save your writing to an account so it shows up on any phone.</p>
+
+    <div id="signin-out" class="signin-box">
+      <button class="btn bg-pink" id="google-btn">Continue with Google</button>
+      <p class="muted center">or use your email</p>
+      <label for="si-email" class="sr-only">Email</label>
+      <input id="si-email" class="line-input" type="email" placeholder="Email" autocomplete="email">
+      <label for="si-pass" class="sr-only">Password</label>
+      <input id="si-pass" class="line-input" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+      <div class="row stretch">
+        <button class="btn bg-yellow grow" id="email-in-btn">Sign in</button>
+        <button class="btn bg-orange grow" id="email-new-btn">Create account</button>
+      </div>
+      <button class="link-btn self-center" id="forgot-btn">Forgot password?</button>
+    </div>
+
+    <div id="signin-in" class="signin-box" hidden>
+      <div class="card bg-yellow center">
+        <p class="muted">Signed in as</p>
+        <p><b id="si-who"></b></p>
+        <p class="muted" id="si-status">Your writing saves to your account automatically.</p>
+      </div>
+      <button class="btn bg-orange" id="sync-btn">Save now</button>
+      <button class="btn bg-pink" id="signout-btn">Sign out</button>
+    </div>
   </section>
 
   <!-- ===================== SEE PAST ENTRIES ===================== -->

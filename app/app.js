@@ -122,7 +122,7 @@
   const screens = {
     onboarding: renderOnboarding, home: renderHome, choose: renderChoose, prompt: renderPrompt,
     write: renderWrite, done: function () {}, profile: renderProfile, entries: renderEntries,
-    stats: renderStats
+    stats: renderStats, signin: renderSignin
   };
   function route() {
     const parts = (location.hash || '#home').slice(1).split('/');
@@ -140,6 +140,54 @@
   }
   function go(name) { if (location.hash === '#' + name) route(); else location.hash = name; }
   window.addEventListener('hashchange', route);
+
+  // ===================== SIGN IN (temporary test screen) =====================
+  // Uses cloud.js. Replace this screen once the real sign-in screen is designed.
+  let cloudHooked = false;
+  function cloudReady() {
+    if (!window.Cloud || !Cloud.ready) { toast('Still connecting, try again in a second.'); return false; }
+    return true;
+  }
+  function authError(e) {
+    const msgs = {
+      'auth/invalid-email': 'That email doesn\'t look right.',
+      'auth/missing-password': 'Type a password first.',
+      'auth/weak-password': 'Passwords need at least 6 characters.',
+      'auth/email-already-in-use': 'That email already has an account. Tap Sign in instead.',
+      'auth/invalid-credential': 'Wrong email or password.',
+      'auth/wrong-password': 'Wrong email or password.',
+      'auth/user-not-found': 'No account with that email. Tap Create account.',
+      'auth/popup-closed-by-user': 'Sign in was closed before finishing.',
+      'auth/too-many-requests': 'Too many tries. Wait a minute and try again.'
+    };
+    toast(msgs[e && e.code] || ('Something went wrong: ' + ((e && e.code) || e)));
+  }
+  function renderSignin() {
+    hookCloud();
+    const u = window.Cloud && Cloud.user;
+    $('#signin-out').hidden = !!u;
+    $('#signin-in').hidden = !u;
+    if (u) $('#si-who').textContent = u.email || u.displayName || 'your account';
+  }
+  function hookCloud() {
+    if (window.Cloud && !cloudHooked) { cloudHooked = true; Cloud.onChange(() => { if (location.hash === '#signin') renderSignin(); updateSigninLink(); }); }
+  }
+  function updateSigninLink() {
+    hookCloud();
+    const u = window.Cloud && Cloud.user;
+    $('#signin-link').textContent = u ? 'Signed in as ' + (u.email || 'you') : 'Sign in to save your writing';
+  }
+  const emailVals = () => [$('#si-email').value.trim(), $('#si-pass').value];
+  $('#google-btn').addEventListener('click', () => { if (cloudReady()) Cloud.signInWithGoogle().then(() => toast('Signed in!')).catch(authError); });
+  $('#email-in-btn').addEventListener('click', () => { if (cloudReady()) Cloud.signInWithEmail(...emailVals()).then(() => toast('Signed in!')).catch(authError); });
+  $('#email-new-btn').addEventListener('click', () => { if (cloudReady()) Cloud.createAccount(...emailVals()).then(() => toast('Account created!')).catch(authError); });
+  $('#forgot-btn').addEventListener('click', () => {
+    const email = $('#si-email').value.trim();
+    if (!email) { toast('Type your email first, then tap Forgot password.'); return; }
+    if (cloudReady()) Cloud.resetPassword(email).then(() => toast('Check your email for a reset link.')).catch(authError);
+  });
+  $('#sync-btn').addEventListener('click', () => { if (cloudReady()) Cloud.save().then(() => toast('Saved to your account.')).catch(authError); });
+  $('#signout-btn').addEventListener('click', () => { if (cloudReady()) Cloud.signOut().then(() => toast('Signed out. Your writing is still on this phone.')).catch(authError); });
 
   // ===================== ONBOARDING =====================
   const ob = { step: 1, goal: '', topics: [], helpers: [] };
@@ -299,6 +347,7 @@
 
   // ===================== PROFILE =====================
   function renderProfile() {
+    updateSigninLink();
     const entries = getEntries();
     const p = getProfile() || {};
     const s = streaks(entries);
