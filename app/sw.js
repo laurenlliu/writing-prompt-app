@@ -1,6 +1,6 @@
 // Lets the app open even without internet, after the first visit.
 // When you change any app file, bump the version number so phones get the update.
-const CACHE = 'wpa-v1';
+const CACHE = 'wpa-v2';
 const FILES = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'cloud.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
@@ -15,7 +15,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(e.request).then((res) => {
+    fetch(e.request, { cache: 'no-cache' }).then((res) => {
       const copy = res.clone();
       caches.open(CACHE).then((c) => c.put(e.request, copy));
       return res;
