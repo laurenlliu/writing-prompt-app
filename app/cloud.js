@@ -1,10 +1,7 @@
 // =====================================================================
 // CLOUD SAVING (ready for the sign-in screen)
-// Right now this file does nothing, and the app saves on the phone only.
-// To turn it on:
-//   1. Create a free Firebase project (see SETUP-CLOUD.md in the repo).
-//   2. Paste your project's settings into FIREBASE_CONFIG below.
-//   3. When the sign-in screen is built, its buttons call
+// Firebase is connected. Nothing is saved to the cloud until a user signs in.
+// When the sign-in screen is built, its buttons call
 //      Cloud.signInWithGoogle(), Cloud.signInWithEmail(...), Cloud.signOut().
 // Once signed in, entries, streaks and the profile are copied to the
 // user's account and come back on any phone they sign in on.
@@ -12,7 +9,15 @@
 (function () {
   'use strict';
 
-  const FIREBASE_CONFIG = null;   // paste { apiKey: "...", authDomain: "...", projectId: "...", appId: "..." } here
+  // Firebase project settings (safe to share; the Firestore rules protect the data)
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyD0gx_GmuT65hRDW_Xvz9eMvfMb_MNXLJM",
+    authDomain: "writing-prompt-app.firebaseapp.com",
+    projectId: "writing-prompt-app",
+    storageBucket: "writing-prompt-app.firebasestorage.app",
+    messagingSenderId: "889315254732",
+    appId: "1:889315254732:web:62726e339331c78ce23d69"
+  };
 
   const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const KEYS = ['wpa.entries', 'wpa.profile', 'wpa.respins'];   // what gets saved to the account
