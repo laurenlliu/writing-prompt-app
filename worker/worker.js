@@ -5,7 +5,8 @@
 // Setup steps are in SETUP-AI.md in the repo.
 // =====================================================================
 
-const MODEL = '@cf/meta/llama-3.1-8b-instruct';
+// Tried in order. If one is unavailable, the next one is used.
+const MODELS = ['@cf/meta/llama-3.1-8b-instruct', '@cf/meta/llama-3.2-3b-instruct', '@cf/mistral/mistral-7b-instruct-v0.1'];
 
 // Only the real app (and testing on your own computer) can use this
 const ALLOWED_ORIGINS = ['https://laurenlliu.github.io', 'http://localhost:8000', 'http://127.0.0.1:8000'];
@@ -84,17 +85,21 @@ export default {
       avoid ? `Do not repeat this prompt: "${avoid}".` : ''
     ].filter(Boolean).join(' ');
 
-    try {
-      const result = await env.AI.run(MODEL, {
-        messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
-        max_tokens: 80,
-        temperature: 0.9
-      });
-      const prompt = cleanPrompt(result && result.response);
-      if (prompt.length < 10 || prompt.length > 300) return reply({ error: 'Bad answer from AI' }, 502, origin);
-      return reply({ prompt, topic }, 200, origin);
-    } catch (e) {
-      return reply({ error: 'AI is busy, try again' }, 503, origin);
+    const problems = [];
+    for (const model of MODELS) {
+      try {
+        const result = await env.AI.run(model, {
+          messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+          max_tokens: 80,
+          temperature: 0.9
+        });
+        const prompt = cleanPrompt(result && result.response);
+        if (prompt.length >= 10 && prompt.length <= 300) return reply({ prompt, topic, model }, 200, origin);
+        problems.push(model + ': bad answer');
+      } catch (e) {
+        problems.push(model + ': ' + String((e && e.message) || e).slice(0, 150));
+      }
     }
+    return reply({ error: 'AI is busy, try again', detail: problems }, 503, origin);
   }
 };
