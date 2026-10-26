@@ -16,6 +16,10 @@
   };
   const MIN_BANK_WORDS_USED = 3;   // must use at least this many word bank words to finish
   const RESPINS_PER_DAY = 3;       // how many times you can re-spin a prompt each day
+  // AI prompts: paste the Cloudflare Worker's address here (see SETUP-AI.md).
+  // Leave it empty to use only the prompts written in data.js.
+  const AI_PROMPT_URL = '';
+  const AI_PROMPTS_PER_DAY = 15;   // after this many, the app uses the prompts in data.js
   // Status badge by number of entries written
   const STATUSES = [
     { name: 'Novice', from: 0 },
@@ -24,7 +28,7 @@
   ];
 
   // ---------- Saving and loading ----------
-  const KEYS = { entries: 'wpa.entries', draft: 'wpa.draft', respins: 'wpa.respins', profile: 'wpa.profile' };
+  const KEYS = { entries: 'wpa.entries', draft: 'wpa.draft', respins: 'wpa.respins', profile: 'wpa.profile', ai: 'wpa.ai' };
   function load(key, fallback) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
   }
@@ -259,6 +263,7 @@
     if (state.text) { saveDraft(); go('write'); return; }   // switching levels mid-story keeps the prompt and story
     state.prompt = pickOne(promptPool(state.promptType));
     go('prompt');
+    loadAiPrompt();
   });
 
   // ===================== PROMPT =====================
@@ -266,9 +271,33 @@
   function renderPrompt() {
     const type = state.promptType === 'challenge' ? 'Challenge mode' : 'Normal';
     $('#prompt-label').textContent = type + ' prompt (' + LEVELS[state.level].label.toLowerCase() + ')';
-    $('#prompt-text').textContent = state.prompt;
+    $('#prompt-text').textContent = state.loadingPrompt ? 'Writing a prompt for you...' : state.prompt;
     const left = respinsLeft();
-    $('#respin-btn').disabled = left <= 0;
+    $('#respin-btn').disabled = left <= 0 || state.loadingPrompt;
+    $('#continue-btn').disabled = !!state.loadingPrompt;
+  }
+
+  // Ask the AI for a prompt based on the onboarding answers.
+  // If it's off, slow, busy or used up for today, the prompt from data.js stays.
+  function aiCallsLeft() { const r = load(KEYS.ai, null); return r && r.date === dayKey() ? r.left : AI_PROMPTS_PER_DAY; }
+  async function loadAiPrompt() {
+    if (!AI_PROMPT_URL || aiCallsLeft() <= 0 || !navigator.onLine) return;
+    const p = getProfile() || {};
+    const ask = { type: state.promptType, level: state.level, topics: p.topics || [], goal: p.goal || '', avoid: state.prompt };
+    state.loadingPrompt = true; renderPrompt();
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      const res = await fetch(AI_PROMPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ask), signal: ctrl.signal });
+      clearTimeout(timer);
+      const data = await res.json();
+      if (res.ok && data.prompt) {
+        state.prompt = data.prompt;
+        save(KEYS.ai, { date: dayKey(), left: aiCallsLeft() - 1 });
+      }
+    } catch (e) { /* keep the data.js prompt */ }
+    state.loadingPrompt = false;
+    if (location.hash === '#prompt') renderPrompt();
   }
   $('#respin-btn').addEventListener('click', () => {
     const left = respinsLeft();
@@ -276,8 +305,9 @@
     save(KEYS.respins, { date: dayKey(), left: left - 1 });
     state.prompt = pickOne(promptPool(state.promptType), state.prompt);
     renderPrompt();
+    loadAiPrompt();
   });
-  $('#continue-btn').addEventListener('click', () => { state.text = ''; state.secondsSpent = 0; saveDraft(); go('write'); });
+  $('#continue-btn').addEventListener('click', () => { if (state.loadingPrompt) return; state.text = ''; state.secondsSpent = 0; saveDraft(); go('write'); });
 
   // ===================== WRITE =====================
   const story = $('#story');
