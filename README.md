@@ -37,6 +37,18 @@ The flow: Home → Make a choice → Prompt → Write → Challenge complete.
 | --- | --- | --- |
 | ![Write](images/write.png) | ![Word bank open](images/write-word-bank-open.png) | ![Challenge complete](images/challenge-complete.png) |
 
+## Profile
+
+From the home screen, tap **Update profile** to open your profile. From there you can see your past entries and your writing stats.
+
+| Profile | See past entries | Organize by, open | Writing stats |
+| --- | --- | --- | --- |
+| ![Profile](images/profile.png) | ![See past entries](images/past-entries.png) | ![Organize by open](images/past-entries-organize.png) | ![Writing stats](images/writing-stats.png) |
+
+- **Profile:** change your picture (pick a drawn icon or upload a photo), change your onboarding answers, and see your current vs. longest streak, entries written, current status (novice, wordsmith or storyteller), levels done, words typed and favorite entries.
+- **See past entries:** your entries as little pages with the date underneath. Organize them by date, mode or word count.
+- **Writing stats:** most used mode, this week's ratings, minutes spent writing and longest streak.
+
 ## How challenge mode should work
 
 - You pick a difficulty, a prompt type (normal or challenge mode) and a word bank every day. The app doesn't remember your last choice.
@@ -62,4 +74,6 @@ The flow: Home → Make a choice → Prompt → Write → Challenge complete.
 
 - What happens if you tap Done writing with fewer than 3 word bank words used.
 - The exact number of prompt re-spins (3 or 4) and how many are left.
-- Coming next: the Profile screen and the screen for reading an old entry.
+- How status badges are earned (number of entries, streaks, or points).
+- What the screen for reading one old entry looks like.
+- Coming next: the app logo and drawn profile icons.
