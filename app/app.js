@@ -2,7 +2,7 @@
 // Writing Prompt App
 // One page with several screens. The part after # in the address decides
 // which screen shows: #onboarding, #home, #choose, #prompt, #write, #done,
-// #profile, #entries, #entry/3, #stats.
+// #profile, #entries, #stats.
 // Everything is saved in this phone's browser (localStorage).
 // =====================================================================
 (function () {
@@ -114,7 +114,7 @@
   const screens = {
     onboarding: renderOnboarding, home: renderHome, choose: renderChoose, prompt: renderPrompt,
     write: renderWrite, done: function () {}, profile: renderProfile, entries: renderEntries,
-    entry: renderEntry, stats: renderStats
+    stats: renderStats
   };
   function route() {
     const parts = (location.hash || '#home').slice(1).split('/');
@@ -171,7 +171,6 @@
     const p = Object.assign(getProfile() || {}, { goal: ob.goal.trim(), topics: ob.topics.slice(), helpers: ob.helpers.slice() });
     save(KEYS.profile, p);
     ob.step = 1; ob.loaded = false;
-    toast(first ? 'Welcome! Your answers are saved.' : 'Your answers are updated.');
     go(first ? 'home' : 'profile');
   });
 
@@ -182,27 +181,19 @@
 
     const hasDraft = Boolean(state.prompt);
     const daily = $('#daily-btn');
-    daily.textContent = hasDraft ? 'Continue saved entry' : 'Complete daily challenge';
     daily.setAttribute('href', hasDraft ? '#write' : '#choose');
     $('#write-tab').setAttribute('href', hasDraft ? '#write' : '#choose');
 
     const list = $('#recent-list');
-    const recent = entries.map((e, i) => ({ e, i })).slice(-3).reverse();
+    const recent = entries.map((e) => ({ e })).slice(-3).reverse();
     list.innerHTML = recent.length
-      ? recent.map(({ e, i }) => '<a class="recent-row" href="#entry/' + i + '"><span>' + escapeHtml(dateLabel(e.date)) + '</span><span aria-hidden="true">›</span></a>').join('')
-      : '<p class="hint">Your entries will show up here after you finish your first challenge.</p>';
+      ? recent.map(({ e }) => '<div class="recent-row"><span>' + escapeHtml(dateLabel(e.date)) + '</span><span aria-hidden="true">›</span></div>').join('')
+      : '';
   }
-  $$('[data-soon]').forEach((b) => b.addEventListener('click', () => toast('Coming soon!')));
 
   // ===================== MAKE A CHOICE =====================
   function renderChoose() {
     $$('.opt').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.group] === b.dataset.value)));
-    const L = LEVELS[state.level];
-    let hint = L.label + ': ' + L.bankSize + ' word bank words';
-    if (L.minWords) hint += ', at least ' + L.minWords + ' words';
-    if (L.minutes) hint += ', ' + L.minutes + ' minute timer';
-    $('#level-hint').textContent = hint + '.';
-    $('#start-btn').textContent = state.text ? 'Back to writing' : 'Start writing';
   }
   $$('.opt').forEach((b) => b.addEventListener('click', () => { state[b.dataset.group] = b.dataset.value; renderChoose(); }));
   $('#start-btn').addEventListener('click', () => {
@@ -222,7 +213,6 @@
     $('#prompt-text').textContent = state.prompt;
     const left = respinsLeft();
     $('#respin-btn').disabled = left <= 0;
-    $('#respins-left').textContent = left + (left === 1 ? ' re-spin' : ' re-spins') + ' left today';
   }
   $('#respin-btn').addEventListener('click', () => {
     const left = respinsLeft();
@@ -239,10 +229,6 @@
     const wc = countWords(state.text);
     $('#word-count').textContent = wc;
     $('#highlights').innerHTML = underlineWords(state.text, state.words) + '\n';
-    let goal = 'Use at least ' + MIN_BANK_WORDS_USED + ' word bank words · ' + usedWords().length + ' used';
-    const min = LEVELS[state.level].minWords;
-    if (min) goal += ' · ' + wc + '/' + min + ' words';
-    $('#goal-line').textContent = goal;
   }
   function renderWrite() {
     if (story.value !== state.text) story.value = state.text;
@@ -275,7 +261,7 @@
   }
   function stopTicker() { clearInterval(tickId); tickId = null; if (state.prompt) saveDraft(); }
 
-  $('#save-later').addEventListener('click', () => { saveDraft(); toast('Saved! You can finish it later.'); go('home'); });
+  $('#save-later').addEventListener('click', () => { saveDraft(); go('home'); });
 
   $('#done-btn').addEventListener('click', () => {
     const wc = countWords(state.text);
@@ -332,7 +318,7 @@
       c.getContext('2d').drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
       const p = getProfile() || {};
       p.photo = c.toDataURL('image/jpeg', 0.85);
-      if (save(KEYS.profile, p)) { toast('Picture updated!'); renderProfile(); } else toast('That picture is too big to save.');
+      if (save(KEYS.profile, p)) renderProfile();
       URL.revokeObjectURL(img.src);
     };
     img.src = URL.createObjectURL(file);
@@ -342,19 +328,15 @@
   // ===================== SEE PAST ENTRIES =====================
   let sortBy = 'date';
   const LEVEL_ORDER = { easy: 0, medium: 1, hard: 2 };
-  function renderEntries(arg) {
-    const favoritesOnly = arg === 'favorites';
+  function renderEntries() {
     let list = getEntries().map((e, i) => ({ e, i }));
-    if (favoritesOnly) list = list.filter(({ e }) => e.favorite);
     if (sortBy === 'date') list.sort((a, b) => b.i - a.i);
     if (sortBy === 'mode') list.sort((a, b) => LEVEL_ORDER[a.e.level] - LEVEL_ORDER[b.e.level] || b.i - a.i);
     if (sortBy === 'words') list.sort((a, b) => b.e.wordCount - a.e.wordCount);
-    $('#entries-title').textContent = favoritesOnly ? 'Favorite Entries' : 'See past Entries';
     $$('#sort-menu button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.sort === sortBy)));
-    $('#entries-sub').textContent = list.length ? '' : (favoritesOnly ? 'Tap ♡ Favorite on an entry to save it here.' : 'No entries yet. Finish a challenge to see it here.');
-    $('#entry-grid').innerHTML = list.map(({ e, i }) =>
-      '<a class="entry-card" href="#entry/' + i + '"><span class="preview">' + escapeHtml(e.text.slice(0, 160)) +
-      '</span><span class="date">' + escapeHtml(dateLabel(e.date)) + '</span></a>').join('');
+    $('#entry-grid').innerHTML = list.map(({ e }) =>
+      '<div class="entry-card"><span class="preview">' + escapeHtml(e.text.slice(0, 160)) +
+      '</span><span class="date">' + escapeHtml(dateLabel(e.date)) + '</span></div>').join('');
   }
   $('#sort-btn').addEventListener('click', () => {
     const m = $('#sort-menu'); m.hidden = !m.hidden;
@@ -363,30 +345,8 @@
   $$('#sort-menu button').forEach((b) => b.addEventListener('click', () => {
     sortBy = b.dataset.sort;
     $('#sort-menu').hidden = true;
-    renderEntries((location.hash.split('/')[1]) || '');
+    renderEntries();
   }));
-
-  // ===================== ONE ENTRY =====================
-  let openEntry = -1;
-  function renderEntry(arg) {
-    const entries = getEntries();
-    openEntry = Number(arg);
-    const e = entries[openEntry];
-    if (!e) { go('entries'); return; }
-    $('#entry-date').textContent = dateLabel(e.date);
-    $('#entry-meta').textContent = LEVELS[e.level].label + ' · ' + e.wordCount + ' words · ' + e.minutes + ' min · used ' + e.usedWords.join(', ');
-    $('#entry-prompt').textContent = e.prompt;
-    $('#entry-text').innerHTML = underlineWords(e.text, e.words);
-    $('#fav-btn').setAttribute('aria-pressed', String(Boolean(e.favorite)));
-    $('#fav-btn').textContent = e.favorite ? '♥ Favorite' : '♡ Favorite';
-  }
-  $('#fav-btn').addEventListener('click', () => {
-    const entries = getEntries();
-    if (!entries[openEntry]) return;
-    entries[openEntry].favorite = !entries[openEntry].favorite;
-    save(KEYS.entries, entries);
-    renderEntry(openEntry);
-  });
 
   // ===================== WRITING STATS =====================
   function renderStats() {
@@ -394,7 +354,7 @@
     const counts = { easy: 0, medium: 0, hard: 0 };
     entries.forEach((e) => { counts[e.level]++; });
     const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
-    $('#s-mode').textContent = entries.length ? LEVELS[top].label + ' ›' : 'None yet';
+    $('#s-mode').textContent = entries.length ? LEVELS[top].label : '';
     const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
     const since = dayKey(weekAgo);
     $('#s-minutes').textContent = entries.filter((e) => e.date >= since).reduce((sum, e) => sum + (e.minutes || 0), 0);
@@ -409,7 +369,6 @@
     const used = usedWords();
     $('#word-grid').innerHTML = state.words.map((w) =>
       '<button class="word' + (used.includes(w) ? ' used' : '') + '" data-word="' + escapeHtml(w) + '" aria-pressed="' + (w === selected) + '">' + escapeHtml(w) + '</button>').join('');
-    $('#bank-hint').textContent = 'Tap a word to see what it means · ' + used.length + ' of ' + MIN_BANK_WORDS_USED + ' used';
   }
   $('#bank-btn').addEventListener('click', () => {
     renderBank(null);
@@ -445,7 +404,6 @@
       ? '<b>' + escapeHtml(word) + '</b> <i>' + escapeHtml(def.type) + '</i><p>' + escapeHtml(def.meaning) + '</p>'
       : '<b>' + escapeHtml(word) + '</b><p>No definition found. Try looking it up in a dictionary.</p>';
   });
-  $('#prompt-btn').addEventListener('click', () => { $('#popup-prompt').textContent = state.prompt; openPopup('#prompt-popup'); });
   $$('.overlay').forEach((o) => o.addEventListener('click', (e) => {
     if (e.target === o || e.target.closest('[data-close]')) { o.hidden = true; story.focus(); }
   }));

@@ -8,20 +8,19 @@ To try the screens, open `index.html` in a browser (or turn on GitHub Pages for 
 
 Try it here: **https://laurenlliu.github.io/writing-prompt-app/app/** (open it on a phone).
 
-What works so far (the whole flow):
+What works so far (only the screens she has drawn):
 
-- **Onboarding** the first time you open it: your goal, topics and how the app helps you. You can change the answers later from your profile.
-- **Home** shows your real streak and recent entries. Tap an entry to read it.
+- **Onboarding** the first time you open it. You can change the answers later from your profile.
+- **Home** shows your real streak and recent entries.
 - **Make a choice → Prompt (3 re-spins a day) → Write → Congrats.**
-- The **Write** screen counts your words, underlines word bank words as you use them, and crosses them out in the word bank. Tap any word in the word bank to see what it means. Hard mode has a 10 minute timer. Medium and Hard have a word count minimum.
-- **Done writing** checks that you used at least 3 word bank words, then saves your entry.
-- **Save for later** keeps your story, and the home screen lets you continue it.
-- **Profile:** change your picture (upload a photo), current vs. longest streak, entries written, status (Novice, Wordsmith at 5 entries, Storyteller at 15), levels done, words typed, past entries and favorites.
-- **See past entries** with Organize by date, mode or word count. Open an entry to read it and mark it as a favorite.
-- **Writing stats:** most used mode, minutes writing this week and longest streak.
+- The **Write** screen counts your words and underlines word bank words as you use them. In the word bank, used words are crossed out, and tapping a word shows what it means. Hard mode has a 10 minute timer.
+- **Done writing** checks that you used at least 3 word bank words (and the word minimum on Medium and Hard), then saves your entry.
+- **Save for later** keeps your story, and Complete daily challenge takes you back to it.
+- **Profile:** change your picture, change your onboarding answers, streaks, entries written, status, levels done and words typed.
+- **See past entries** with Organize by date, mode or word count, and **Writing stats**.
 - Everything is saved on the phone you use, so nothing needs an account yet.
 
-Not built yet: Explore prompts, Memories, this week's ratings, and drawn profile icons.
+Buttons that don't do anything yet because they haven't been designed: Explore prompts, Memories, Favorite entries, the Prompt button on the Write screen, tapping an old entry, and this week's ratings.
 
 Files in `app/`:
 
