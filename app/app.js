@@ -47,6 +47,14 @@
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   }
+  // Prompts from the topics the user picked in onboarding (all topics if none picked)
+  function promptPool(type) {
+    const chosen = ((getProfile() || {}).topics || []).filter((t) => PROMPTS[t]);
+    const topics = chosen.length ? chosen : Object.keys(PROMPTS);
+    const pool = [];
+    topics.forEach((t) => (PROMPTS[t][type] || []).forEach((p) => pool.push(p)));
+    return pool.length ? pool : Object.keys(PROMPTS).flatMap((t) => PROMPTS[t][type] || []);
+  }
   function pickOne(list, avoid) {
     const options = list.filter((x) => x !== avoid);
     return options.length ? options[Math.floor(Math.random() * options.length)] : list[0];
@@ -201,7 +209,7 @@
     state.words = shuffle(WORD_BANKS[state.bank]).slice(0, L.bankSize);
     state.secondsLeft = L.minutes * 60;
     if (state.text) { saveDraft(); go('write'); return; }   // switching levels mid-story keeps the prompt and story
-    state.prompt = pickOne(PROMPTS[state.promptType]);
+    state.prompt = pickOne(promptPool(state.promptType));
     go('prompt');
   });
 
@@ -218,7 +226,7 @@
     const left = respinsLeft();
     if (left <= 0) return;
     save(KEYS.respins, { date: dayKey(), left: left - 1 });
-    state.prompt = pickOne(PROMPTS[state.promptType], state.prompt);
+    state.prompt = pickOne(promptPool(state.promptType), state.prompt);
     renderPrompt();
   });
   $('#continue-btn').addEventListener('click', () => { state.text = ''; state.secondsSpent = 0; saveDraft(); go('write'); });

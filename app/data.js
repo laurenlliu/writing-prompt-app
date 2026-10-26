@@ -4,31 +4,77 @@
 // Keep every line in the same shape: "text in quotes", with a comma after.
 // =====================================================================
 
+// Prompts are grouped by the topics on the onboarding screen.
+// The app only picks prompts from the topics the user chose.
+// (If they chose none, it picks from every topic.)
+// The topic names must match the onboarding buttons exactly.
 const PROMPTS = {
-  normal: [
-    "What are 3 small things that made you happy today?",
-    "Describe your favorite place to be alone.",
-    "Write about a time you changed your mind about something.",
-    "What would you tell yourself from one year ago?",
-    "Describe a meal that reminds you of someone.",
-    "Write about a hobby you could do for hours.",
-    "What is something you want to get better at, and why?",
-    "Describe the view from a window you know well.",
-    "Write about a hike, walk or trip you remember.",
-    "What does a perfect Saturday look like for you?",
-    "Write about a piece of art that made you feel something.",
-    "Describe a sound that always makes you calm."
-  ],
-  challenge: [
-    "Write a story that starts and ends with the same sentence.",
-    "Write about a door in your town that only opens at midnight.",
-    "Tell a story from the point of view of an object in your room.",
-    "Write a scene that is only dialogue, with no descriptions.",
-    "Write a mystery where the last line reveals who did it.",
-    "Convince the reader that a boring food is the best food ever.",
-    "Write a letter to someone 100 years in the future.",
-    "Write a story where the weather changes everything."
-  ]
+  Fiction: {
+    normal: [
+      "Write about a hobby you could do for hours, but make the main character someone else.",
+      "Describe a meal that reminds a character of someone they miss.",
+      "Write about a hike, walk or trip where something unexpected happens."
+    ],
+    challenge: [
+      "Tell a story from the point of view of an object in your room.",
+      "Write a story that starts and ends with the same sentence."
+    ]
+  },
+  Suspense: {
+    normal: [
+      "Write about a door in your town that only opens at midnight.",
+      "Someone leaves a note on your desk. What does it say?",
+      "Describe a sound in the house that nobody else can hear."
+    ],
+    challenge: [
+      "Write a mystery where the last line reveals who did it.",
+      "Write a scene that is only dialogue, with no descriptions."
+    ]
+  },
+  Persuasive: {
+    normal: [
+      "Convince a friend to try your favorite hobby.",
+      "Should students have homework on weekends? Pick a side.",
+      "Make the case for your favorite season."
+    ],
+    challenge: [
+      "Convince the reader that a boring food is the best food ever.",
+      "Argue for something you actually disagree with."
+    ]
+  },
+  Nonfiction: {
+    normal: [
+      "Write about a time you changed your mind about something.",
+      "Describe a meal that reminds you of someone.",
+      "Write about a hike, walk or trip you remember."
+    ],
+    challenge: [
+      "Write a letter to someone 100 years in the future.",
+      "Tell a true story about today in exactly 10 sentences."
+    ]
+  },
+  Introspective: {
+    normal: [
+      "What are 3 small things that made you happy today?",
+      "What would you tell yourself from one year ago?",
+      "What is something you want to get better at, and why?"
+    ],
+    challenge: [
+      "Describe your favorite place to be alone without naming it.",
+      "Write about a sound that always makes you calm, without using the word calm."
+    ]
+  },
+  Explanatory: {
+    normal: [
+      "Explain how to make your favorite snack to someone who has never cooked.",
+      "What does a perfect Saturday look like for you, step by step?",
+      "Explain the rules of a game you love."
+    ],
+    challenge: [
+      "Explain how the internet works to your great-grandparent.",
+      "Write a story where the weather changes everything, then explain why it happened."
+    ]
+  }
 };
 
 // Easy has 4 words, Medium 6, Hard 8 (picked at random from the list you choose).
