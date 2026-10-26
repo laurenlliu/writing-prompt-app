@@ -13,7 +13,7 @@ What works so far (the whole flow):
 - **Onboarding** the first time you open it: your goal, topics and how the app helps you. You can change the answers later from your profile.
 - **Home** shows your real streak and recent entries. Tap an entry to read it.
 - **Make a choice → Prompt (3 re-spins a day) → Write → Congrats.**
-- The **Write** screen counts your words, underlines word bank words as you use them, and crosses them out in the word bank. Hard mode has a 10 minute timer. Medium and Hard have a word count minimum.
+- The **Write** screen counts your words, underlines word bank words as you use them, and crosses them out in the word bank. Tap any word in the word bank to see what it means. Hard mode has a 10 minute timer. Medium and Hard have a word count minimum.
 - **Done writing** checks that you used at least 3 word bank words, then saves your entry.
 - **Save for later** keeps your story, and the home screen lets you continue it.
 - **Profile:** change your picture (upload a photo), current vs. longest streak, entries written, status (Novice, Wordsmith at 5 entries, Storyteller at 15), levels done, words typed, past entries and favorites.
@@ -27,7 +27,7 @@ Files in `app/`:
 
 - `index.html`: all the screens.
 - `styles.css`: colors, fonts and button styles (change a color once at the top and every screen updates).
-- `data.js`: **the prompts and word bank lists. Replace these with your own!**
+- `data.js`: **the prompts, word bank lists and word definitions. Replace these with your own!** If a word has no definition, the app looks it up online.
 - `app.js`: how everything works. The rules (words per level, word minimums, timer length, re-spins per day) are at the top.
 
 ## Colors and fonts

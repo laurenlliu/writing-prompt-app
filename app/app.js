@@ -405,12 +405,45 @@
   // ---------- Popups ----------
   function openPopup(id) { $(id).hidden = false; $(id).querySelector('.close').focus(); }
   function closePopups() { $$('.overlay').forEach((o) => { o.hidden = true; }); }
-  $('#bank-btn').addEventListener('click', () => {
+  function renderBank(selected) {
     const used = usedWords();
     $('#word-grid').innerHTML = state.words.map((w) =>
-      '<div class="word' + (used.includes(w) ? ' used' : '') + '">' + escapeHtml(w) + '</div>').join('');
-    $('#bank-hint').textContent = 'Use at least ' + MIN_BANK_WORDS_USED + ' words to finish · ' + used.length + ' used';
+      '<button class="word' + (used.includes(w) ? ' used' : '') + '" data-word="' + escapeHtml(w) + '" aria-pressed="' + (w === selected) + '">' + escapeHtml(w) + '</button>').join('');
+    $('#bank-hint').textContent = 'Tap a word to see what it means · ' + used.length + ' of ' + MIN_BANK_WORDS_USED + ' used';
+  }
+  $('#bank-btn').addEventListener('click', () => {
+    renderBank(null);
+    $('#word-def').hidden = true;
     openPopup('#bank-popup');
+  });
+  // Tap a word to see its definition (from data.js, or looked up online if it's missing there)
+  const lookedUp = {};
+  async function definitionFor(word) {
+    const key = word.toLowerCase();
+    if (typeof DEFINITIONS !== 'undefined' && DEFINITIONS[key]) return DEFINITIONS[key];
+    if (lookedUp[key]) return lookedUp[key];
+    try {
+      const res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(key));
+      if (!res.ok) return null;
+      const data = await res.json();
+      const m = data[0].meanings[0];
+      lookedUp[key] = { type: m.partOfSpeech, meaning: m.definitions[0].definition };
+      return lookedUp[key];
+    } catch (e) { return null; }
+  }
+  $('#word-grid').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-word]');
+    if (!btn) return;
+    const word = btn.dataset.word;
+    renderBank(word);
+    const box = $('#word-def');
+    box.hidden = false;
+    box.innerHTML = '<b>' + escapeHtml(word) + '</b> <i>looking it up...</i>';
+    const def = await definitionFor(word);
+    if ($('#word-grid [aria-pressed="true"]')?.dataset.word !== word) return;   // another word was tapped meanwhile
+    box.innerHTML = def
+      ? '<b>' + escapeHtml(word) + '</b> <i>' + escapeHtml(def.type) + '</i><p>' + escapeHtml(def.meaning) + '</p>'
+      : '<b>' + escapeHtml(word) + '</b><p>No definition found. Try looking it up in a dictionary.</p>';
   });
   $('#prompt-btn').addEventListener('click', () => { $('#popup-prompt').textContent = state.prompt; openPopup('#prompt-popup'); });
   $$('.overlay').forEach((o) => o.addEventListener('click', (e) => {
