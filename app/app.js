@@ -290,6 +290,7 @@
     $('#prompt-text').textContent = state.loadingPrompt ? 'Writing a prompt for you...' : state.prompt;
     const left = respinsLeft();
     $('#respin-btn').disabled = left <= 0 || state.loadingPrompt;
+    $('#respin-left').textContent = left > 0 ? left + ' left today' : 'None left today';
     $('#continue-btn').disabled = !!state.loadingPrompt;
   }
 

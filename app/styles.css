@@ -61,6 +61,8 @@ button { font: inherit; color: var(--ink); cursor: pointer; }
 }
 .btn.pill { border-radius: 28px; min-height: 56px; padding: 0 32px; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.stack { flex-direction: column; gap: 2px; }
+.btn small { font-size: 13px; font-weight: 500; }
 .back { align-self: flex-start; min-height: 44px; display: flex; align-items: center; font-weight: 700; text-decoration: none; }
 
 /* ---------- Home ---------- */
