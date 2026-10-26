@@ -1,7 +1,8 @@
 // =====================================================================
 // Writing Prompt App
-// One page with several screens. The part after # in the address
-// (#home, #choose, #prompt, #write, #done) decides which screen shows.
+// One page with several screens. The part after # in the address decides
+// which screen shows: #onboarding, #home, #choose, #prompt, #write, #done,
+// #profile, #entries, #entry/3, #stats.
 // Everything is saved in this phone's browser (localStorage).
 // =====================================================================
 (function () {
@@ -15,14 +16,24 @@
   };
   const MIN_BANK_WORDS_USED = 3;   // must use at least this many word bank words to finish
   const RESPINS_PER_DAY = 3;       // how many times you can re-spin a prompt each day
+  // Status badge by number of entries written
+  const STATUSES = [
+    { name: 'Novice', from: 0 },
+    { name: 'Wordsmith', from: 5 },
+    { name: 'Storyteller', from: 15 }
+  ];
 
   // ---------- Saving and loading ----------
-  const KEYS = { entries: 'wpa.entries', draft: 'wpa.draft', respins: 'wpa.respins' };
+  const KEYS = { entries: 'wpa.entries', draft: 'wpa.draft', respins: 'wpa.respins', profile: 'wpa.profile' };
   function load(key, fallback) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
   }
-  function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage full or blocked */ } }
+  function save(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (e) { return false; }
+  }
   function remove(key) { try { localStorage.removeItem(key); } catch (e) { /* ignore */ } }
+  const getEntries = () => load(KEYS.entries, []);
+  const getProfile = () => load(KEYS.profile, null);
 
   // ---------- Small helpers ----------
   const $ = (s) => document.querySelector(s);
@@ -41,10 +52,14 @@
     return options.length ? options[Math.floor(Math.random() * options.length)] : list[0];
   }
   function countWords(text) { const m = text.trim().match(/\S+/g); return m ? m.length : 0; }
-  function escapeHtml(s) { return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
   function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   // "recant" also counts "recanted", "recanting", etc.
   function wordPattern(words) { return new RegExp('\\b(' + words.map(escapeRe).join('|') + ')[a-z]*', 'gi'); }
+  function underlineWords(text, words) {
+    const html = escapeHtml(text);
+    return words && words.length ? html.replace(wordPattern(words), (m) => '<mark>' + m + '</mark>') : html;
+  }
 
   let toastTimer = null;
   function toast(message) {
@@ -54,48 +69,24 @@
     toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
   }
 
-  // ---------- The current challenge (restored if there is a saved draft) ----------
-  const state = Object.assign(
-    { level: 'easy', promptType: 'normal', bank: 'easy', prompt: '', words: [], text: '', secondsLeft: 0 },
-    load(KEYS.draft, {})
-  );
-  function saveDraft() {
-    save(KEYS.draft, {
-      level: state.level, promptType: state.promptType, bank: state.bank,
-      prompt: state.prompt, words: state.words, text: state.text, secondsLeft: state.secondsLeft
+  // ---------- Stats used by several screens ----------
+  function streaks(entries) {
+    const days = Array.from(new Set(entries.map((e) => e.date))).sort();
+    // longest run of days in a row
+    let longest = 0, run = 0, prev = null;
+    days.forEach((k) => {
+      if (prev) { const p = new Date(prev + 'T12:00:00'); p.setDate(p.getDate() + 1); run = dayKey(p) === k ? run + 1 : 1; } else run = 1;
+      longest = Math.max(longest, run); prev = k;
     });
-  }
-  function usedWords() {
-    return state.words.filter((w) => new RegExp('\\b' + escapeRe(w) + '[a-z]*', 'i').test(state.text));
-  }
-
-  // ---------- Screen switching ----------
-  const screens = { home: renderHome, choose: renderChoose, prompt: renderPrompt, write: renderWrite, done: function () {} };
-  function route() {
-    let name = (location.hash || '#home').slice(1);
-    if (!screens[name]) name = 'home';
-    if ((name === 'prompt' || name === 'write') && !state.prompt) name = 'choose';
-    $$('[data-screen]').forEach((s) => { s.hidden = s.dataset.screen !== name; });
-    if (name !== 'write') stopTimer();
-    closePopups();
-    screens[name]();
-    window.scrollTo(0, 0);
-  }
-  function go(name) { if (location.hash === '#' + name) route(); else location.hash = name; }
-  window.addEventListener('hashchange', route);
-
-  // ---------- HOME ----------
-  function streakCount(entries) {
-    const days = new Set(entries.map((e) => e.date));
+    // current streak: counts back from today (or from yesterday if you haven't written yet today)
+    const set = new Set(days);
     const d = new Date();
-    if (!days.has(dayKey(d))) {           // no entry today yet: the streak can still count from yesterday
-      d.setDate(d.getDate() - 1);
-      if (!days.has(dayKey(d))) return 0;
-    }
-    let n = 0;
-    while (days.has(dayKey(d))) { n++; d.setDate(d.getDate() - 1); }
-    return n;
+    if (!set.has(dayKey(d))) { d.setDate(d.getDate() - 1); }
+    let current = 0;
+    while (set.has(dayKey(d))) { current++; d.setDate(d.getDate() - 1); }
+    return { current, longest };
   }
+  function statusFor(count) { let s = STATUSES[0].name; STATUSES.forEach((x) => { if (count >= x.from) s = x.name; }); return s; }
   function dateLabel(key) {
     if (key === dayKey()) return 'Today';
     const y = new Date(); y.setDate(y.getDate() - 1);
@@ -103,9 +94,91 @@
     const [Y, M, D] = key.split('-');
     return M + '/' + D + '/' + Y.slice(2);
   }
+
+  // ---------- The current challenge (restored if there is a saved draft) ----------
+  const state = Object.assign(
+    { level: 'easy', promptType: 'normal', bank: 'easy', prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 },
+    load(KEYS.draft, {})
+  );
+  function saveDraft() {
+    save(KEYS.draft, {
+      level: state.level, promptType: state.promptType, bank: state.bank, prompt: state.prompt,
+      words: state.words, text: state.text, secondsLeft: state.secondsLeft, secondsSpent: state.secondsSpent
+    });
+  }
+  function usedWords() {
+    return state.words.filter((w) => new RegExp('\\b' + escapeRe(w) + '[a-z]*', 'i').test(state.text));
+  }
+
+  // ---------- Screen switching ----------
+  const screens = {
+    onboarding: renderOnboarding, home: renderHome, choose: renderChoose, prompt: renderPrompt,
+    write: renderWrite, done: function () {}, profile: renderProfile, entries: renderEntries,
+    entry: renderEntry, stats: renderStats
+  };
+  function route() {
+    const parts = (location.hash || '#home').slice(1).split('/');
+    let name = parts[0];
+    const arg = parts[1];
+    if (!getProfile() && name !== 'onboarding') { location.replace('#onboarding'); return; }  // first time: onboarding
+    if (!screens[name]) name = 'home';
+    if ((name === 'prompt' || name === 'write') && !state.prompt) name = 'choose';
+    $$('[data-screen]').forEach((s) => { s.hidden = s.dataset.screen !== name; });
+    if (name !== 'write') stopTicker();
+    closePopups();
+    $('#sort-menu').hidden = true;
+    screens[name](arg);
+    window.scrollTo(0, 0);
+  }
+  function go(name) { if (location.hash === '#' + name) route(); else location.hash = name; }
+  window.addEventListener('hashchange', route);
+
+  // ===================== ONBOARDING =====================
+  const ob = { step: 1, goal: '', topics: [], helpers: [] };
+  function renderOnboarding() {
+    const p = getProfile();
+    if (p && ob.step === 1 && !ob.loaded) { ob.goal = p.goal || ''; ob.topics = (p.topics || []).slice(); ob.helpers = (p.helpers || []).slice(); }
+    ob.loaded = true;
+    showObStep();
+  }
+  function showObStep() {
+    $$('.ob-step').forEach((s) => { s.hidden = Number(s.dataset.step) !== ob.step; });
+    $('#ob-goal').value = ob.goal;
+    $$('[data-multi] .pick').forEach((b) => {
+      const list = ob[b.parentElement.dataset.multi];
+      b.setAttribute('aria-pressed', String(list.includes(b.dataset.value)));
+    });
+    const pageColors = { 1: 'var(--orange)', 2: 'var(--orange)', 3: 'var(--pink)' };
+    $$('.pages span').forEach((s, i) => {
+      const on = i + 1 === ob.step;
+      s.classList.toggle('on', on);
+      s.style.background = on ? pageColors[ob.step] : '';
+    });
+    $('#ob-back').classList.toggle('invisible', ob.step === 1);
+    $('#ob-next').textContent = ob.step === 3 ? 'submit ›' : 'next ›';
+  }
+  $('#ob-goal').addEventListener('input', (e) => { ob.goal = e.target.value; });
+  $$('[data-multi] .pick').forEach((b) => b.addEventListener('click', () => {
+    const list = ob[b.parentElement.dataset.multi];
+    const i = list.indexOf(b.dataset.value);
+    if (i >= 0) list.splice(i, 1); else list.push(b.dataset.value);
+    showObStep();
+  }));
+  $('#ob-back').addEventListener('click', () => { if (ob.step > 1) { ob.step--; showObStep(); } });
+  $('#ob-next').addEventListener('click', () => {
+    if (ob.step < 3) { ob.step++; showObStep(); return; }
+    const first = !getProfile();
+    const p = Object.assign(getProfile() || {}, { goal: ob.goal.trim(), topics: ob.topics.slice(), helpers: ob.helpers.slice() });
+    save(KEYS.profile, p);
+    ob.step = 1; ob.loaded = false;
+    toast(first ? 'Welcome! Your answers are saved.' : 'Your answers are updated.');
+    go(first ? 'home' : 'profile');
+  });
+
+  // ===================== HOME =====================
   function renderHome() {
-    const entries = load(KEYS.entries, []);
-    $('#streak-count').textContent = streakCount(entries);
+    const entries = getEntries();
+    $('#streak-count').textContent = streaks(entries).current;
 
     const hasDraft = Boolean(state.prompt);
     const daily = $('#daily-btn');
@@ -114,22 +187,14 @@
     $('#write-tab').setAttribute('href', hasDraft ? '#write' : '#choose');
 
     const list = $('#recent-list');
-    list.innerHTML = '';
-    const recent = entries.slice(-3).reverse();
-    if (!recent.length) {
-      list.innerHTML = '<p class="hint">Your entries will show up here after you finish your first challenge.</p>';
-      return;
-    }
-    recent.forEach((e) => {
-      const row = document.createElement('div');
-      row.className = 'recent-row';
-      row.innerHTML = '<span>' + escapeHtml(dateLabel(e.date)) + '</span><span aria-hidden="true">›</span>';
-      list.appendChild(row);
-    });
+    const recent = entries.map((e, i) => ({ e, i })).slice(-3).reverse();
+    list.innerHTML = recent.length
+      ? recent.map(({ e, i }) => '<a class="recent-row" href="#entry/' + i + '"><span>' + escapeHtml(dateLabel(e.date)) + '</span><span aria-hidden="true">›</span></a>').join('')
+      : '<p class="hint">Your entries will show up here after you finish your first challenge.</p>';
   }
   $$('[data-soon]').forEach((b) => b.addEventListener('click', () => toast('Coming soon!')));
 
-  // ---------- MAKE A CHOICE ----------
+  // ===================== MAKE A CHOICE =====================
   function renderChoose() {
     $$('.opt').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.group] === b.dataset.value)));
     const L = LEVELS[state.level];
@@ -144,20 +209,13 @@
     const L = LEVELS[state.level];
     state.words = shuffle(WORD_BANKS[state.bank]).slice(0, L.bankSize);
     state.secondsLeft = L.minutes * 60;
-    if (state.text) {                 // switching levels in the middle of writing: keep the prompt and story
-      saveDraft();
-      go('write');
-      return;
-    }
+    if (state.text) { saveDraft(); go('write'); return; }   // switching levels mid-story keeps the prompt and story
     state.prompt = pickOne(PROMPTS[state.promptType]);
     go('prompt');
   });
 
-  // ---------- PROMPT ----------
-  function respinsLeft() {
-    const r = load(KEYS.respins, null);
-    return r && r.date === dayKey() ? r.left : RESPINS_PER_DAY;
-  }
+  // ===================== PROMPT =====================
+  function respinsLeft() { const r = load(KEYS.respins, null); return r && r.date === dayKey() ? r.left : RESPINS_PER_DAY; }
   function renderPrompt() {
     const type = state.promptType === 'challenge' ? 'Challenge mode' : 'Normal';
     $('#prompt-label').textContent = type + ' prompt (' + LEVELS[state.level].label.toLowerCase() + ')';
@@ -173,19 +231,14 @@
     state.prompt = pickOne(PROMPTS[state.promptType], state.prompt);
     renderPrompt();
   });
-  $('#continue-btn').addEventListener('click', () => { state.text = ''; saveDraft(); go('write'); });
+  $('#continue-btn').addEventListener('click', () => { state.text = ''; state.secondsSpent = 0; saveDraft(); go('write'); });
 
-  // ---------- WRITE ----------
+  // ===================== WRITE =====================
   const story = $('#story');
-  function renderHighlights() {
-    let html = escapeHtml(state.text);
-    if (state.words.length) html = html.replace(wordPattern(state.words), (m) => '<mark>' + m + '</mark>');
-    $('#highlights').innerHTML = html + '\n';
-  }
   function updateWrite() {
     const wc = countWords(state.text);
     $('#word-count').textContent = wc;
-    renderHighlights();
+    $('#highlights').innerHTML = underlineWords(state.text, state.words) + '\n';
     let goal = 'Use at least ' + MIN_BANK_WORDS_USED + ' word bank words · ' + usedWords().length + ' used';
     const min = LEVELS[state.level].minWords;
     if (min) goal += ' · ' + wc + '/' + min + ' words';
@@ -194,34 +247,33 @@
   function renderWrite() {
     if (story.value !== state.text) story.value = state.text;
     updateWrite();
-    const hasTimer = LEVELS[state.level].minutes > 0;
-    $('#timer').hidden = !hasTimer;
-    if (hasTimer) startTimer();
+    $('#timer').hidden = LEVELS[state.level].minutes <= 0;
+    renderTimer();
+    startTicker();
   }
   story.addEventListener('input', () => { state.text = story.value; updateWrite(); saveDraft(); });
   story.addEventListener('scroll', () => { $('#highlights').scrollTop = story.scrollTop; });
 
-  // Timer (Hard mode)
-  let timerId = null;
+  // One clock that counts minutes spent writing, and runs the Hard mode timer
+  let tickId = null;
   function renderTimer() {
     const s = Math.max(0, state.secondsLeft);
     $('#timer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
     $('#timer').classList.toggle('done', s === 0);
   }
-  function startTimer() {
-    renderTimer();
-    if (timerId || state.secondsLeft <= 0) return;
-    timerId = setInterval(() => {
-      state.secondsLeft -= 1;
-      renderTimer();
-      saveDraft();
-      if (state.secondsLeft <= 0) {
-        stopTimer();
-        toast("Time's up! Finish your last sentence and tap Done writing.");
+  function startTicker() {
+    if (tickId) return;
+    tickId = setInterval(() => {
+      state.secondsSpent += 1;
+      if (LEVELS[state.level].minutes > 0 && state.secondsLeft > 0) {
+        state.secondsLeft -= 1;
+        renderTimer();
+        if (state.secondsLeft === 0) toast("Time's up! Finish your last sentence and tap Done writing.");
       }
+      if (state.secondsSpent % 5 === 0) saveDraft();
     }, 1000);
   }
-  function stopTimer() { clearInterval(timerId); timerId = null; }
+  function stopTicker() { clearInterval(tickId); tickId = null; if (state.prompt) saveDraft(); }
 
   $('#save-later').addEventListener('click', () => { saveDraft(); toast('Saved! You can finish it later.'); go('home'); });
 
@@ -237,18 +289,118 @@
       toast('Write at least ' + L.minWords + ' words for ' + L.label + ' (' + wc + ' so far).');
       return;
     }
-    const entries = load(KEYS.entries, []);
+    const entries = getEntries();
     entries.push({
       date: dayKey(), finishedAt: new Date().toISOString(),
       level: state.level, promptType: state.promptType, bank: state.bank,
       prompt: state.prompt, words: state.words, usedWords: used,
-      text: state.text, wordCount: wc
+      text: state.text, wordCount: wc, minutes: Math.max(1, Math.round(state.secondsSpent / 60)), favorite: false
     });
     save(KEYS.entries, entries);
     remove(KEYS.draft);
-    Object.assign(state, { prompt: '', words: [], text: '', secondsLeft: 0 });
+    Object.assign(state, { prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 });
+    stopTicker();
     go('done');
   });
+
+  // ===================== PROFILE =====================
+  function renderProfile() {
+    const entries = getEntries();
+    const p = getProfile() || {};
+    const s = streaks(entries);
+    const av = $('#avatar');
+    av.style.backgroundImage = p.photo ? 'url(' + p.photo + ')' : '';
+    av.textContent = p.photo ? '' : '☺';
+    $('#p-streak').textContent = s.current;
+    $('#p-longest').textContent = s.longest;
+    $('#p-entries').textContent = entries.length;
+    $('#p-status').textContent = statusFor(entries.length);
+    const n = (lvl) => entries.filter((e) => e.level === lvl).length;
+    $('#p-levels').innerHTML = n('easy') + ' easy<br>' + n('medium') + ' medium<br>' + n('hard') + ' hard';
+    $('#p-words').textContent = entries.reduce((sum, e) => sum + (e.wordCount || 0), 0).toLocaleString();
+  }
+  // Change picture: shrink the photo so it fits in storage, then save it
+  $('#photo-input').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = () => {
+      const size = 200, c = document.createElement('canvas');
+      c.width = c.height = size;
+      const scale = Math.max(size / img.width, size / img.height);
+      const w = img.width * scale, h = img.height * scale;
+      c.getContext('2d').drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+      const p = getProfile() || {};
+      p.photo = c.toDataURL('image/jpeg', 0.85);
+      if (save(KEYS.profile, p)) { toast('Picture updated!'); renderProfile(); } else toast('That picture is too big to save.');
+      URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(file);
+    e.target.value = '';
+  });
+
+  // ===================== SEE PAST ENTRIES =====================
+  let sortBy = 'date';
+  const LEVEL_ORDER = { easy: 0, medium: 1, hard: 2 };
+  function renderEntries(arg) {
+    const favoritesOnly = arg === 'favorites';
+    let list = getEntries().map((e, i) => ({ e, i }));
+    if (favoritesOnly) list = list.filter(({ e }) => e.favorite);
+    if (sortBy === 'date') list.sort((a, b) => b.i - a.i);
+    if (sortBy === 'mode') list.sort((a, b) => LEVEL_ORDER[a.e.level] - LEVEL_ORDER[b.e.level] || b.i - a.i);
+    if (sortBy === 'words') list.sort((a, b) => b.e.wordCount - a.e.wordCount);
+    $('#entries-title').textContent = favoritesOnly ? 'Favorite Entries' : 'See past Entries';
+    $$('#sort-menu button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.sort === sortBy)));
+    $('#entries-sub').textContent = list.length ? '' : (favoritesOnly ? 'Tap ♡ Favorite on an entry to save it here.' : 'No entries yet. Finish a challenge to see it here.');
+    $('#entry-grid').innerHTML = list.map(({ e, i }) =>
+      '<a class="entry-card" href="#entry/' + i + '"><span class="preview">' + escapeHtml(e.text.slice(0, 160)) +
+      '</span><span class="date">' + escapeHtml(dateLabel(e.date)) + '</span></a>').join('');
+  }
+  $('#sort-btn').addEventListener('click', () => {
+    const m = $('#sort-menu'); m.hidden = !m.hidden;
+    $('#sort-btn').setAttribute('aria-expanded', String(!m.hidden));
+  });
+  $$('#sort-menu button').forEach((b) => b.addEventListener('click', () => {
+    sortBy = b.dataset.sort;
+    $('#sort-menu').hidden = true;
+    renderEntries((location.hash.split('/')[1]) || '');
+  }));
+
+  // ===================== ONE ENTRY =====================
+  let openEntry = -1;
+  function renderEntry(arg) {
+    const entries = getEntries();
+    openEntry = Number(arg);
+    const e = entries[openEntry];
+    if (!e) { go('entries'); return; }
+    $('#entry-date').textContent = dateLabel(e.date);
+    $('#entry-meta').textContent = LEVELS[e.level].label + ' · ' + e.wordCount + ' words · ' + e.minutes + ' min · used ' + e.usedWords.join(', ');
+    $('#entry-prompt').textContent = e.prompt;
+    $('#entry-text').innerHTML = underlineWords(e.text, e.words);
+    $('#fav-btn').setAttribute('aria-pressed', String(Boolean(e.favorite)));
+    $('#fav-btn').textContent = e.favorite ? '♥ Favorite' : '♡ Favorite';
+  }
+  $('#fav-btn').addEventListener('click', () => {
+    const entries = getEntries();
+    if (!entries[openEntry]) return;
+    entries[openEntry].favorite = !entries[openEntry].favorite;
+    save(KEYS.entries, entries);
+    renderEntry(openEntry);
+  });
+
+  // ===================== WRITING STATS =====================
+  function renderStats() {
+    const entries = getEntries();
+    const counts = { easy: 0, medium: 0, hard: 0 };
+    entries.forEach((e) => { counts[e.level]++; });
+    const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+    $('#s-mode').textContent = entries.length ? LEVELS[top].label + ' ›' : 'None yet';
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
+    const since = dayKey(weekAgo);
+    $('#s-minutes').textContent = entries.filter((e) => e.date >= since).reduce((sum, e) => sum + (e.minutes || 0), 0);
+    const longest = streaks(entries).longest;
+    $('#s-longest').textContent = longest + (longest === 1 ? ' day' : ' days');
+  }
 
   // ---------- Popups ----------
   function openPopup(id) { $(id).hidden = false; $(id).querySelector('.close').focus(); }
@@ -264,7 +416,7 @@
   $$('.overlay').forEach((o) => o.addEventListener('click', (e) => {
     if (e.target === o || e.target.closest('[data-close]')) { o.hidden = true; story.focus(); }
   }));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopups(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePopups(); $('#sort-menu').hidden = true; } });
 
   route();
 })();

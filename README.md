@@ -8,15 +8,20 @@ To try the screens, open `index.html` in a browser (or turn on GitHub Pages for 
 
 Try it here: **https://laurenlliu.github.io/writing-prompt-app/app/** (open it on a phone).
 
-What works so far:
+What works so far (the whole flow):
 
-- Home shows your real streak and your recent entries.
-- Make a choice, then a prompt (with 3 re-spins a day), then the Write screen.
-- The Write screen counts your words, underlines word bank words as you use them, and crosses them out in the word bank.
-- Hard mode has a 10 minute timer. Medium and Hard have a word count minimum.
-- Done writing checks that you used at least 3 word bank words, then saves your entry.
-- Save for later keeps your story, and the home screen lets you continue it.
+- **Onboarding** the first time you open it: your goal, topics and how the app helps you. You can change the answers later from your profile.
+- **Home** shows your real streak and recent entries. Tap an entry to read it.
+- **Make a choice → Prompt (3 re-spins a day) → Write → Congrats.**
+- The **Write** screen counts your words, underlines word bank words as you use them, and crosses them out in the word bank. Hard mode has a 10 minute timer. Medium and Hard have a word count minimum.
+- **Done writing** checks that you used at least 3 word bank words, then saves your entry.
+- **Save for later** keeps your story, and the home screen lets you continue it.
+- **Profile:** change your picture (upload a photo), current vs. longest streak, entries written, status (Novice, Wordsmith at 5 entries, Storyteller at 15), levels done, words typed, past entries and favorites.
+- **See past entries** with Organize by date, mode or word count. Open an entry to read it and mark it as a favorite.
+- **Writing stats:** most used mode, minutes writing this week and longest streak.
 - Everything is saved on the phone you use, so nothing needs an account yet.
+
+Not built yet: Explore prompts, Memories, this week's ratings, and drawn profile icons.
 
 Files in `app/`:
 

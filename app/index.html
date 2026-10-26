@@ -12,8 +12,46 @@
 <body>
 <main id="app">
 
-  <!-- HOME -->
-  <section class="screen" data-screen="home">
+  <!-- ===================== ONBOARDING (first time only) ===================== -->
+  <section class="screen" data-screen="onboarding" hidden>
+    <p class="muted center">Onboarding questions</p>
+
+    <div class="ob-step" data-step="1">
+      <div class="question"><span class="num bg-pink">1</span><h1>What is your main goal you want to accomplish with this app?</h1></div>
+      <label for="ob-goal" class="sr-only">Your main goal</label>
+      <input id="ob-goal" class="line-input" type="text" placeholder="Type here..." autocomplete="off">
+    </div>
+
+    <div class="ob-step" data-step="2" hidden>
+      <div class="question"><span class="num bg-pink">2</span><h1>What topics interest you the most?</h1></div>
+      <div class="opts cols-2" data-multi="topics">
+        <button class="pick" data-value="Persuasive" data-color="orange"><span class="box"></span>Persuasive</button>
+        <button class="pick" data-value="Fiction" data-color="pink"><span class="box"></span>Fiction</button>
+        <button class="pick" data-value="Nonfiction" data-color="pink"><span class="box"></span>Nonfiction</button>
+        <button class="pick" data-value="Suspense" data-color="orange"><span class="box"></span>Suspense</button>
+        <button class="pick" data-value="Introspective" data-color="orange"><span class="box"></span>Introspective</button>
+        <button class="pick" data-value="Explanatory" data-color="pink"><span class="box"></span>Explanatory</button>
+      </div>
+    </div>
+
+    <div class="ob-step" data-step="3" hidden>
+      <div class="question"><span class="num bg-orange">3</span><h1>How can we help you improve your writing?</h1></div>
+      <div class="opts cols-2" data-multi="helpers">
+        <button class="pick" data-value="Word banks" data-color="orange"><span class="box"></span>Word banks</button>
+        <button class="pick" data-value="Timers" data-color="pink"><span class="box"></span>Timers</button>
+        <button class="pick span-2" data-value="Word/character goals" data-color="yellow"><span class="box"></span>Word/character goals</button>
+      </div>
+    </div>
+
+    <nav class="ob-nav">
+      <button class="link-btn" id="ob-back">‹ back</button>
+      <div class="pages" aria-hidden="true"><span>1</span><span>2</span><span>3</span></div>
+      <button class="link-btn" id="ob-next">next ›</button>
+    </nav>
+  </section>
+
+  <!-- ===================== HOME ===================== -->
+  <section class="screen" data-screen="home" hidden>
     <nav class="tabs" aria-label="Main">
       <a href="#home" class="tab is-active" aria-current="page">Journal</a>
       <a href="#choose" class="tab" id="write-tab">Write</a>
@@ -37,14 +75,14 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
         Memories
       </button>
-      <button class="tile bg-yellow" data-soon>
+      <a href="#stats" class="tile bg-yellow">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
         See progress
-      </button>
-      <button class="tile bg-pink" data-soon>
+      </a>
+      <a href="#profile" class="tile bg-pink">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
         Update profile
-      </button>
+      </a>
     </div>
 
     <div class="recent card bg-yellow">
@@ -53,7 +91,7 @@
     </div>
   </section>
 
-  <!-- MAKE A CHOICE -->
+  <!-- ===================== MAKE A CHOICE ===================== -->
   <section class="screen" data-screen="choose" hidden>
     <a href="#home" class="back">‹ back</a>
     <h1 class="title center">Make a<br>Choice!</h1>
@@ -88,7 +126,7 @@
     <button class="btn bg-yellow push-down self-center" id="start-btn">Start writing</button>
   </section>
 
-  <!-- PROMPT -->
+  <!-- ===================== PROMPT ===================== -->
   <section class="screen center-screen" data-screen="prompt" hidden>
     <p class="muted" id="prompt-label"></p>
     <h1 class="title center" id="prompt-text"></h1>
@@ -99,7 +137,7 @@
     <p class="hint center" id="respins-left"></p>
   </section>
 
-  <!-- WRITE -->
+  <!-- ===================== WRITE ===================== -->
   <section class="screen write-screen" data-screen="write" hidden>
     <div class="toolbar">
       <button class="chip bg-pink" id="save-later">Save for later</button>
@@ -121,10 +159,91 @@
     </div>
   </section>
 
-  <!-- CHALLENGE COMPLETE -->
+  <!-- ===================== CHALLENGE COMPLETE ===================== -->
   <section class="screen center-screen" data-screen="done" hidden>
-    <h1 class="title center big-title">Congrats,<br>you've finished<br>today's challenge!</h1>
+    <h1 class="title center">Congrats,<br>you've finished<br>today's challenge!</h1>
     <a href="#home" class="btn bg-pink pill">Return to home</a>
+  </section>
+
+  <!-- ===================== PROFILE ===================== -->
+  <section class="screen" data-screen="profile" hidden>
+    <a href="#home" class="back">‹ go back to home</a>
+    <h1 class="title center">Profile</h1>
+
+    <div class="bento">
+      <label class="b-tile bg-yellow photo-tile">
+        <span class="avatar" id="avatar"></span>
+        <span class="b-label">Change picture</span>
+        <input type="file" accept="image/*" id="photo-input" class="sr-only">
+      </label>
+      <div class="b-tile bg-orange tall-2">
+        <span class="b-label">Current streak</span>
+        <span class="b-big xl" id="p-streak">0</span>
+        <span class="b-small">vs.</span>
+        <span class="b-label">Longest streak</span>
+        <span class="b-big" id="p-longest">0</span>
+      </div>
+      <a href="#onboarding" class="b-tile bg-pink"><span class="b-label">Change onboarding answers</span></a>
+      <div class="b-tile bg-orange">
+        <span class="b-big" id="p-entries">0</span>
+        <span class="b-label">entries written</span>
+      </div>
+      <div class="b-tile bg-pink tall-2">
+        <span class="b-label">Levels done</span>
+        <span class="levels" id="p-levels"></span>
+      </div>
+      <div class="b-tile bg-yellow">
+        <span class="b-small">Current status</span>
+        <span class="status" id="p-status">Novice</span>
+      </div>
+    </div>
+
+    <div class="trio">
+      <a href="#entries" class="b-tile bg-orange"><span class="b-label">See past entries</span><span aria-hidden="true">›</span></a>
+      <div class="b-tile bg-pink"><span class="b-big md" id="p-words">0</span><span class="b-label">words typed</span></div>
+      <a href="#entries/favorites" class="b-tile bg-yellow"><span class="b-label">Favorite entries</span><span aria-hidden="true">›</span></a>
+    </div>
+  </section>
+
+  <!-- ===================== SEE PAST ENTRIES ===================== -->
+  <section class="screen" data-screen="entries" hidden>
+    <div class="row between">
+      <a href="#profile" class="back">‹ go back</a>
+      <div class="menu-wrap">
+        <button class="link-btn" id="sort-btn" aria-haspopup="true" aria-expanded="false">Organize by ⌄</button>
+        <div class="menu" id="sort-menu" role="menu" hidden>
+          <button role="menuitem" class="bg-yellow" data-sort="date">Date</button>
+          <button role="menuitem" class="bg-orange" data-sort="mode">Mode</button>
+          <button role="menuitem" class="bg-pink" data-sort="words">Word count</button>
+        </div>
+      </div>
+    </div>
+    <h1 class="title center" id="entries-title">See past Entries</h1>
+    <p class="hint center" id="entries-sub"></p>
+    <div class="entry-grid" id="entry-grid"></div>
+    <a href="#stats" class="btn bg-pink push-down self-end">Writing stats</a>
+  </section>
+
+  <!-- ===================== ONE ENTRY ===================== -->
+  <section class="screen" data-screen="entry" hidden>
+    <div class="row between">
+      <a href="#entries" class="back">‹ go back</a>
+      <button class="link-btn fav" id="fav-btn" aria-pressed="false">♡ Favorite</button>
+    </div>
+    <h1 class="title" id="entry-date"></h1>
+    <p class="hint" id="entry-meta"></p>
+    <div class="card bg-orange entry-prompt" id="entry-prompt"></div>
+    <div class="entry-text" id="entry-text"></div>
+  </section>
+
+  <!-- ===================== WRITING STATS ===================== -->
+  <section class="screen" data-screen="stats" hidden>
+    <h1 class="title center stats-title">Writing stats</h1>
+    <div class="stat-row"><span>Most used mode</span><b id="s-mode">None yet</b></div>
+    <div class="stat-row"><span>This week's ratings</span><b id="s-ratings">Coming soon</b></div>
+    <div class="card bg-pink stat-card"><span class="b-big lg" id="s-minutes">0</span><span class="b-label">minutes writing this week</span></div>
+    <div class="card bg-yellow stat-card"><span class="b-big lg" id="s-longest">0 days</span><span class="b-label">longest streak</span></div>
+    <a href="#entries" class="btn bg-orange push-down self-start">‹ go back</a>
   </section>
 
 </main>
