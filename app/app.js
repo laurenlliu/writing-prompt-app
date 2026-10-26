@@ -28,7 +28,7 @@
   ];
 
   // ---------- Saving and loading ----------
-  const KEYS = { entries: 'wpa.entries', draft: 'wpa.draft', respins: 'wpa.respins', profile: 'wpa.profile', ai: 'wpa.ai' };
+  const KEYS = { entries: 'wpa.entries', draft: 'wpa.draft', respins: 'wpa.respins', profile: 'wpa.profile', ai: 'wpa.ai', today: 'wpa.today' };
   function load(key, fallback) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
   }
@@ -261,10 +261,26 @@
     state.words = shuffle(WORD_BANKS[state.bank]).slice(0, L.bankSize);
     state.secondsLeft = L.minutes * 60;
     if (state.text) { saveDraft(); go('write'); return; }   // switching levels mid-story keeps the prompt and story
+    // Today's prompt stays the same if you go back and tap Start writing again.
+    // Only Re-spin (limited each day) or finishing an entry gets you a new one.
+    const saved = todaysPrompt(state.promptType);
+    if (saved) { state.prompt = saved; go('prompt'); return; }
     state.prompt = pickOne(promptPool(state.promptType));
+    rememberPrompt();
     go('prompt');
     loadAiPrompt();
   });
+  function todaysPrompt(type) { const t = load(KEYS.today, null); return t && t.date === dayKey() ? t[type] || '' : ''; }
+  function rememberPrompt() {
+    const t = load(KEYS.today, null);
+    const today = t && t.date === dayKey() ? t : { date: dayKey() };
+    today[state.promptType] = state.prompt;
+    save(KEYS.today, today);
+  }
+  function forgetPrompt() {
+    const t = load(KEYS.today, null);
+    if (t && t.date === dayKey()) { delete t[state.promptType]; save(KEYS.today, t); }
+  }
 
   // ===================== PROMPT =====================
   function respinsLeft() { const r = load(KEYS.respins, null); return r && r.date === dayKey() ? r.left : RESPINS_PER_DAY; }
@@ -293,6 +309,7 @@
       const data = await res.json();
       if (res.ok && data.prompt) {
         state.prompt = data.prompt;
+        rememberPrompt();
         save(KEYS.ai, { date: dayKey(), left: aiCallsLeft() - 1 });
       }
     } catch (e) { /* keep the data.js prompt */ }
@@ -304,6 +321,7 @@
     if (left <= 0) return;
     save(KEYS.respins, { date: dayKey(), left: left - 1 });
     state.prompt = pickOne(promptPool(state.promptType), state.prompt);
+    rememberPrompt();
     renderPrompt();
     loadAiPrompt();
   });
@@ -370,6 +388,7 @@
     });
     save(KEYS.entries, entries);
     remove(KEYS.draft);
+    forgetPrompt();   // finished, so the next Start writing gets a new prompt
     Object.assign(state, { prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 });
     stopTicker();
     go('done');

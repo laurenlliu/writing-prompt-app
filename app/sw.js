@@ -1,6 +1,6 @@
 // Lets the app open even without internet, after the first visit.
 // When you change any app file, bump the version number so phones get the update.
-const CACHE = 'wpa-v5';
+const CACHE = 'wpa-v6';
 const FILES = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'cloud.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
