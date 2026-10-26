@@ -19,6 +19,7 @@ What works so far (only the screens she has drawn):
 - **Profile:** change your picture, change your onboarding answers, streaks, entries written, status, levels done and words typed.
 - **See past entries** with Organize by date, mode or word count, and **Writing stats**.
 - **Prompts match your onboarding answers.** Prompts in `data.js` are grouped by topic, and the app only picks from the topics you chose.
+- **AI prompts (optional):** once the free Cloudflare Worker is set up (see `SETUP-AI.md`), each prompt is written fresh by AI from your topics and goal. If the AI is off or busy, the `data.js` prompts are used.
 - **Add to Home Screen** (Safari share button, or Chrome menu) and it opens full screen like a real app, even offline. The icon is a placeholder until the logo is drawn.
 - Everything is saved on the phone you use, so nothing needs an account yet. Cloud saving is ready to switch on once the sign-in screen is designed: see `SETUP-CLOUD.md`.
 
@@ -29,6 +30,7 @@ Files in `app/`:
 - `index.html`: all the screens.
 - `styles.css`: colors, fonts and button styles (change a color once at the top and every screen updates).
 - `data.js`: **the prompts, word bank lists and word definitions. Replace these with your own!** If a word has no definition, the app looks it up online.
+- `worker/worker.js` (next to the `app` folder): the AI prompt writer that runs on Cloudflare.
 - `cloud.js`: cloud saving, switched off until Firebase is set up.
 - `manifest.webmanifest`, `sw.js` and `icons/`: what makes the app installable and work offline.
 - `app.js`: how everything works. The rules (words per level, word minimums, timer length, re-spins per day) are at the top.
