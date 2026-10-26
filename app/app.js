@@ -18,7 +18,7 @@
   const RESPINS_PER_DAY = 3;       // how many times you can re-spin a prompt each day
   // AI prompts: paste the Cloudflare Worker's address here (see SETUP-AI.md).
   // Leave it empty to use only the prompts written in data.js.
-  const AI_PROMPT_URL = '';
+  const AI_PROMPT_URL = 'https://writing-prompts.laurenercs.workers.dev';
   const AI_PROMPTS_PER_DAY = 15;   // after this many, the app uses the prompts in data.js
   // Status badge by number of entries written
   const STATUSES = [
