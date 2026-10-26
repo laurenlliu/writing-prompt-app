@@ -61,7 +61,7 @@
     <nav class="tabs" aria-label="Main">
       <a href="#home" class="tab is-active" aria-current="page">Journal</a>
       <a href="#choose" class="tab" id="write-tab">Write</a>
-      <a href="#choose" class="tab">Challenge mode</a>
+      <a href="#choose" class="tab" id="challenge-tab">Challenge mode</a>
     </nav>
 
     <div class="row">
@@ -280,6 +280,18 @@
     </div>
     <div class="word-grid" id="word-grid"></div>
     <div class="word-def" id="word-def" aria-live="polite" hidden></div>
+  </div>
+</div>
+
+<!-- PROMPT POPUP (TEMPORARY: replace once the real popup is drawn) -->
+<div class="overlay" id="prompt-popup" hidden>
+  <div class="popup bg-yellow" role="dialog" aria-modal="true" aria-labelledby="prompt-title">
+    <div class="popup-head">
+      <span></span>
+      <h2 id="prompt-title">Prompt</h2>
+      <button class="close" data-close aria-label="Close prompt">×</button>
+    </div>
+    <p class="popup-prompt" id="popup-prompt-text"></p>
   </div>
 </div>
 

@@ -256,7 +256,7 @@
     $$('.opt').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.group] === b.dataset.value)));
   }
   $$('.opt').forEach((b) => b.addEventListener('click', () => { state[b.dataset.group] = b.dataset.value; renderChoose(); }));
-  $('#start-btn').addEventListener('click', () => {
+  function startWriting() {
     const L = LEVELS[state.level];
     state.words = shuffle(WORD_BANKS[state.bank]).slice(0, L.bankSize);
     state.secondsLeft = L.minutes * 60;
@@ -269,6 +269,15 @@
     rememberPrompt();
     go('prompt');
     loadAiPrompt();
+  }
+  $('#start-btn').addEventListener('click', startWriting);
+  // Challenge mode skips Make a Choice and goes straight to a challenge prompt
+  // (using the last level and word bank picked). Write still lets you choose.
+  $('#challenge-tab').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (state.text) { go('write'); toast('Finish or save your story first.'); return; }
+    state.promptType = 'challenge';
+    startWriting();
   });
   function todaysPrompt(type) { const t = load(KEYS.today, null); return t && t.date === dayKey() ? t[type] || '' : ''; }
   function rememberPrompt() {
@@ -477,6 +486,11 @@
     $('#word-grid').innerHTML = state.words.map((w) =>
       '<button class="word' + (used.includes(w) ? ' used' : '') + '" data-word="' + escapeHtml(w) + '" aria-pressed="' + (w === selected) + '">' + escapeHtml(w) + '</button>').join('');
   }
+  // TEMPORARY prompt popup until the real one is drawn
+  $('#prompt-btn').addEventListener('click', () => {
+    $('#popup-prompt-text').textContent = state.prompt;
+    openPopup('#prompt-popup');
+  });
   $('#bank-btn').addEventListener('click', () => {
     renderBank(null);
     $('#word-def').hidden = true;
