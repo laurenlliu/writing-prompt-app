@@ -39,12 +39,24 @@ input::placeholder{color:#7A6A62}
 </div>
 <script>
 // Tap an option to select it: the box fills with its color and shows a check.
+function setCheck(b, on) {
+  var c = b.querySelector('.check');
+  if (c.dataset.mode === 'display') c.style.display = on ? 'inline' : 'none';
+  else c.style.visibility = on ? 'visible' : 'hidden';
+}
 document.querySelectorAll('button[aria-pressed]').forEach(function (b) {
   b.addEventListener('click', function () {
     var on = b.getAttribute('aria-pressed') !== 'true';
+    if (b.parentElement.dataset.single) {
+      if (!on) return;
+      b.parentElement.querySelectorAll('button[aria-pressed]').forEach(function (o) {
+        o.setAttribute('aria-pressed', 'false'); o.style.background = '#ffffff';
+        setCheck(o, false);
+      });
+    }
     b.setAttribute('aria-pressed', on);
     b.style.background = on ? b.dataset.color : '#ffffff';
-    b.querySelector('.check').style.visibility = on ? 'visible' : 'hidden';
+    setCheck(b, on);
   });
 });
 </script>

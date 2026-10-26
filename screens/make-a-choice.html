@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Make a choice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'DM Sans',sans-serif;background:#FBF7EE;color:#3A2E2A}
+a{color:#3A2E2A}a:hover{color:#000}
+*{font-variant-ligatures:no-common-ligatures}
+</style>
+</head>
+<body style="display:flex;justify-content:center">
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FBF7EE; padding: 48px 24px 40px; display: flex; flex-direction: column; gap: 26px; font-family: 'DM Sans', sans-serif; color: #3A2E2A">
+<a href="home.html" style="align-self: flex-start; min-height: 44px; display: flex; align-items: center; gap: 4px; font-size: 16px; font-weight: 700; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>back</a>
+<h1 style="margin: 0; font-family: Fraunces, serif; font-size: 36px; font-weight: 700; line-height: 1.15; text-align: center">Make a<br>Choice!</h1>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #7A6A62">Difficulty</div>
+<div data-single="true" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<button aria-pressed="true" data-color="#eea9bc" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 4px 8px; border: 2.5px solid #eea9bc; border-radius: 14px; background: #eea9bc; font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: inline"><path d="M5 12l5 5 9-10"></path></svg><span>Easy</span></button>
+<button aria-pressed="false" data-color="#eedda3" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 4px 8px; border: 2.5px solid #eedda3; border-radius: 14px; background: #ffffff; font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: none"><path d="M5 12l5 5 9-10"></path></svg><span>Medium</span></button>
+<button aria-pressed="false" data-color="#ecc2b0" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 4px 8px; border: 2.5px solid #ecc2b0; border-radius: 14px; background: #ffffff; font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: none"><path d="M5 12l5 5 9-10"></path></svg><span>Hard</span></button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #7A6A62">Prompt</div>
+<div data-single="true" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button aria-pressed="true" data-color="#ecc2b0" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 64px; padding: 4px 8px; border: 2.5px solid #ecc2b0; border-radius: 14px; background: #ecc2b0; font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: inline"><path d="M5 12l5 5 9-10"></path></svg><span>Normal prompt</span></button>
+<button aria-pressed="false" data-color="#eea9bc" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 64px; padding: 4px 8px; border: 2.5px solid #eea9bc; border-radius: 14px; background: #ffffff; font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: none"><path d="M5 12l5 5 9-10"></path></svg><span>Challenge mode prompt</span></button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #7A6A62">Word bank</div>
+<div data-single="true" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<button aria-pressed="true" data-color="#eedda3" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 64px; padding: 4px 8px; border: 2.5px solid #eedda3; border-radius: 14px; background: #eedda3; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: inline"><path d="M5 12l5 5 9-10"></path></svg><span>Easy word bank</span></button>
+<button aria-pressed="false" data-color="#ecc2b0" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 64px; padding: 4px 8px; border: 2.5px solid #ecc2b0; border-radius: 14px; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: none"><path d="M5 12l5 5 9-10"></path></svg><span>Medium word bank</span></button>
+<button aria-pressed="false" data-color="#eea9bc" style="display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 64px; padding: 4px 8px; border: 2.5px solid #eea9bc; border-radius: 14px; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.2; color: #3A2E2A; text-align: center"><svg class="check" data-mode="display" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2E2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; display: none"><path d="M5 12l5 5 9-10"></path></svg><span>Hard word bank</span></button>
+</div>
+</div>
+<a href="prompt.html" style="margin-top: auto; align-self: center; display: flex; align-items: center; justify-content: center; height: 56px; padding: 0 40px; border-radius: 28px; background: #eedda3; font-size: 17px; font-weight: 700; text-decoration: none">Start writing</a>
+</div>
+<script>
+// Tap an option to select it: the box fills with its color and shows a check.
+function setCheck(b, on) {
+  var c = b.querySelector('.check');
+  if (c.dataset.mode === 'display') c.style.display = on ? 'inline' : 'none';
+  else c.style.visibility = on ? 'visible' : 'hidden';
+}
+document.querySelectorAll('button[aria-pressed]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var on = b.getAttribute('aria-pressed') !== 'true';
+    if (b.parentElement.dataset.single) {
+      if (!on) return;
+      b.parentElement.querySelectorAll('button[aria-pressed]').forEach(function (o) {
+        o.setAttribute('aria-pressed', 'false'); o.style.background = '#ffffff';
+        setCheck(o, false);
+      });
+    }
+    b.setAttribute('aria-pressed', on);
+    b.style.background = on ? b.dataset.color : '#ffffff';
+    setCheck(b, on);
+  });
+});
+</script>
+</body>
+</html>

@@ -27,15 +27,26 @@ Option boxes start with just a colored outline. When you tap one, it fills in wi
 
 ## Main app
 
-| Home | Write | Write, word bank open |
+The flow: Home → Make a choice → Prompt → Write → Challenge complete.
+
+| Home | Make a choice | Prompt |
 | --- | --- | --- |
-| ![Home](images/home.png) | ![Write](images/write.png) | ![Word bank open](images/write-word-bank-open.png) |
+| ![Home](images/home.png) | ![Make a choice](images/make-a-choice.png) | ![Prompt](images/prompt.png) |
 
-| Challenge complete |
-| --- |
-| ![Challenge complete](images/challenge-complete.png) |
+| Write | Write, word bank open | Challenge complete |
+| --- | --- | --- |
+| ![Write](images/write.png) | ![Word bank open](images/write-word-bank-open.png) | ![Challenge complete](images/challenge-complete.png) |
 
-Coming next: the Challenge mode screen, where you see today's prompt and pick Easy, Medium or Hard.
+## How challenge mode should work
+
+- You pick a difficulty, a prompt type (normal or challenge mode) and a word bank every day. The app doesn't remember your last choice.
+- **Easy:** 4 word bank words.
+- **Medium:** 6 word bank words and a word count minimum.
+- **Hard:** 8 word bank words, a word count minimum and a timer.
+- Harder levels get more words, not harder words.
+- You see your word bank words before you start writing.
+- If you don't like the prompt, you can re-spin it 3 or 4 times.
+- You can go back to the home screen without starting.
 
 ## How the Write screen should work
 
@@ -49,6 +60,6 @@ Coming next: the Challenge mode screen, where you see today's prompt and pick Ea
 
 ## Still to decide
 
-- Where the button to finish the entry goes on the Write screen.
-- What happens if you try to finish with fewer than 3 word bank words.
-- What the Write screen looks like in Easy mode, which has no word bank.
+- What happens if you tap Done writing with fewer than 3 word bank words used.
+- The exact number of prompt re-spins (3 or 4) and how many are left.
+- Coming next: the Profile screen and the screen for reading an old entry.
