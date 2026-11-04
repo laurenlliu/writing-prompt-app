@@ -20,6 +20,10 @@
   // Leave it empty to use only the prompts written in data.js.
   const AI_PROMPT_URL = 'https://writing-prompts.laurenercs.workers.dev';
   const AI_PROMPTS_PER_DAY = 15;   // after this many, the app uses the prompts in data.js
+  // Extras Allison hasn't designed yet: the test sign-in screen, the prompt popup,
+  // the re-spins-left counter, word definitions and pop-up messages.
+  // false hides them all (for demos). true turns them back on (for testing).
+  const SHOW_EXTRAS = false;
   // Status badge by number of entries written
   const STATUSES = [
     { name: 'Novice', from: 0 },
@@ -75,6 +79,7 @@
 
   let toastTimer = null;
   function toast(message) {
+    if (!SHOW_EXTRAS) return;
     const t = $('#toast');
     t.textContent = message; t.hidden = false;
     clearTimeout(toastTimer);
@@ -133,7 +138,7 @@
     let name = parts[0];
     const arg = parts[1];
     if (!getProfile() && name !== 'onboarding') { location.replace('#onboarding'); return; }  // first time: onboarding
-    if (!screens[name]) name = 'home';
+    if (!screens[name] || (name === 'signin' && !SHOW_EXTRAS)) name = 'home';
     if ((name === 'prompt' || name === 'write') && !state.prompt) name = 'choose';
     $$('[data-screen]').forEach((s) => { s.hidden = s.dataset.screen !== name; });
     if (name !== 'write') stopTicker();
@@ -296,9 +301,10 @@
   function renderPrompt() {
     const type = state.promptType === 'challenge' ? 'Challenge mode' : 'Normal';
     $('#prompt-label').textContent = type + ' prompt (' + LEVELS[state.level].label.toLowerCase() + ')';
-    $('#prompt-text').textContent = state.loadingPrompt ? 'Writing a prompt for you...' : state.prompt;
+    $('#prompt-text').textContent = state.loadingPrompt ? (SHOW_EXTRAS ? 'Writing a prompt for you...' : '') : state.prompt;
     const left = respinsLeft();
     $('#respin-btn').disabled = left <= 0 || state.loadingPrompt;
+    $('#respin-left').hidden = !SHOW_EXTRAS;
     $('#respin-left').textContent = left > 0 ? left + ' left today' : 'None left today';
     $('#continue-btn').disabled = !!state.loadingPrompt;
   }
@@ -406,6 +412,7 @@
 
   // ===================== PROFILE =====================
   function renderProfile() {
+    $('#signin-link').hidden = !SHOW_EXTRAS;
     updateSigninLink();
     const entries = getEntries();
     const p = getProfile() || {};
@@ -488,6 +495,7 @@
   }
   // TEMPORARY prompt popup until the real one is drawn
   $('#prompt-btn').addEventListener('click', () => {
+    if (!SHOW_EXTRAS) return;
     $('#popup-prompt-text').textContent = state.prompt;
     openPopup('#prompt-popup');
   });
@@ -513,7 +521,7 @@
   }
   $('#word-grid').addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-word]');
-    if (!btn) return;
+    if (!btn || !SHOW_EXTRAS) return;
     const word = btn.dataset.word;
     renderBank(word);
     const box = $('#word-def');
