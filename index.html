@@ -3,50 +3,56 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Writing Prompt App Designs</title>
+<title>Writing Prompt App Screens</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap">
 <style>
   body { margin: 0; background: #F3EBDD; color: #3A2E2A; font-family: 'DM Sans', sans-serif; }
-  header { padding: 40px 24px 8px; max-width: 1200px; margin: 0 auto; }
   * { font-variant-ligatures: no-common-ligatures; }
+  header { padding: 40px 24px 8px; max-width: 1200px; margin: 0 auto; }
   h1 { font-family: Fraunces, serif; font-size: 36px; margin: 0 0 8px; }
   p { margin: 0; color: #6B5A52; }
-  h2 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: #6B5A52; margin: 32px 0 16px; }
+  a { color: #3A2E2A; }
+  h2 { font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: #6B5A52; margin: 36px 0 16px; }
   main { max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; }
-  .row { display: flex; flex-wrap: wrap; gap: 32px; }
-  figure { margin: 0; }
-  figcaption { font-weight: 700; margin-bottom: 10px; }
-  iframe { width: 390px; height: 844px; border: 0; border-radius: 28px; background: #FBF7EE; box-shadow: 0 2px 12px rgba(58,46,42,.12); max-width: calc(100vw - 48px); }
+  .row { display: flex; flex-wrap: wrap; gap: 28px; }
+  figure { margin: 0; width: 300px; max-width: 100%; }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; min-height: 40px; }
+  figcaption span { font-size: 14px; color: #6B5A52; }
+  img { display: block; width: 100%; height: auto; border-radius: 24px; box-shadow: 0 2px 12px rgba(58,46,42,.14); background: #FBF7EE; }
 </style>
 </head>
 <body>
 <header>
   <h1>Writing Prompt App</h1>
-  <p>Screen designs. Each screen works: tap the buttons and options to try it out.</p>
+  <p>Every screen in the app right now, in the order you go through them. Tap a screen to see it bigger.</p>
   <p style="margin-top:12px"><a href="app/" style="font-weight:700">Try the working app →</a></p>
 </header>
 <main>
-  <h2>Onboarding</h2>
+  <h2>Getting started</h2>
   <div class="row">
-    <figure><figcaption>1. Main goal</figcaption><iframe src="screens/onboarding-1-goal.html" title="Onboarding question 1"></iframe></figure>
-    <figure><figcaption>2. Topics</figcaption><iframe src="screens/onboarding-2-topics.html" title="Onboarding question 2"></iframe></figure>
-    <figure><figcaption>3. Writing help</figcaption><iframe src="screens/onboarding-3-writing-help.html" title="Onboarding question 3"></iframe></figure>
+    <figure><figcaption><b>1. Welcome</b><span>The first screen a new user sees.</span></figcaption><a href="images/welcome.png"><img src="images/welcome.png" alt="Welcome screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>2. Sign-up</b><span>Google, or email and password.</span></figcaption><a href="images/sign-up.png"><img src="images/sign-up.png" alt="Sign-up screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>3. Onboarding 1</b><span>What do you like to write about?</span></figcaption><a href="images/onboarding-1-write-about.png"><img src="images/onboarding-1-write-about.png" alt="Onboarding 1 screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>4. Onboarding 2</b><span>Topics (pick more than one).</span></figcaption><a href="images/onboarding-2-topics.png"><img src="images/onboarding-2-topics.png" alt="Onboarding 2 screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>5. Onboarding 3</b><span>How we can help you improve.</span></figcaption><a href="images/onboarding-3-writing-help.png"><img src="images/onboarding-3-writing-help.png" alt="Onboarding 3 screen" width="300" loading="lazy"></a></figure>
   </div>
-  <h2>Main app</h2>
+  <h2>Writing</h2>
   <div class="row">
-    <figure><figcaption>Home</figcaption><iframe src="screens/home.html" title="Home"></iframe></figure>
-    <figure><figcaption>Make a choice</figcaption><iframe src="screens/make-a-choice.html" title="Make a choice"></iframe></figure>
-    <figure><figcaption>Prompt</figcaption><iframe src="screens/prompt.html" title="Prompt"></iframe></figure>
-    <figure><figcaption>Write</figcaption><iframe src="screens/write.html" title="Write"></iframe></figure>
-    <figure><figcaption>Write, word bank open</figcaption><iframe src="screens/write-word-bank-open.html" title="Write with word bank open"></iframe></figure>
-    <figure><figcaption>Challenge complete</figcaption><iframe src="screens/challenge-complete.html" title="Challenge complete"></iframe></figure>
+    <figure><figcaption><b>6. Home</b><span>Streak, daily challenge and recent projects.</span></figcaption><a href="images/home.png"><img src="images/home.png" alt="Home screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>7. Make a Choice</b><span>Difficulty, prompt type and word bank.</span></figcaption><a href="images/make-a-choice.png"><img src="images/make-a-choice.png" alt="Make a Choice screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>8. Prompt</b><span>AI prompt from your onboarding answers. 3 re-spins a day.</span></figcaption><a href="images/prompt.png"><img src="images/prompt.png" alt="Prompt screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>9. Write</b><span>Word count, timer, and used words underlined.</span></figcaption><a href="images/write.png"><img src="images/write.png" alt="Write screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>10. Write, Prompt open</b><span>Tap Prompt to see it again.</span></figcaption><a href="images/write-prompt-open.png"><img src="images/write-prompt-open.png" alt="Write, Prompt open screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>11. Write, word bank open</b><span>Used words are crossed out.</span></figcaption><a href="images/write-word-bank-open.png"><img src="images/write-word-bank-open.png" alt="Write, word bank open screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>12. Congrats</b><span>After Done writing.</span></figcaption><a href="images/challenge-complete.png"><img src="images/challenge-complete.png" alt="Congrats screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>13. Daily challenge</b><span>Same prompt for everyone today. 300 words.</span></figcaption><a href="images/daily-challenge.png"><img src="images/daily-challenge.png" alt="Daily challenge screen" width="300" loading="lazy"></a></figure>
   </div>
   <h2>Profile</h2>
   <div class="row">
-    <figure><figcaption>Profile</figcaption><iframe src="screens/profile.html" title="Profile"></iframe></figure>
-    <figure><figcaption>See past entries</figcaption><iframe src="screens/past-entries.html" title="See past entries"></iframe></figure>
-    <figure><figcaption>Organize by, open</figcaption><iframe src="screens/past-entries-organize.html" title="See past entries with Organize by open"></iframe></figure>
-    <figure><figcaption>Writing stats</figcaption><iframe src="screens/writing-stats.html" title="Writing stats"></iframe></figure>
+    <figure><figcaption><b>14. Profile</b><span>Picture, streaks, entries, status, levels and words.</span></figcaption><a href="images/profile.png"><img src="images/profile.png" alt="Profile screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>15. See past entries</b><span>Your entries with their dates.</span></figcaption><a href="images/past-entries.png"><img src="images/past-entries.png" alt="See past entries screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>16. Organize by</b><span>Date, mode or word count.</span></figcaption><a href="images/past-entries-organize.png"><img src="images/past-entries-organize.png" alt="Organize by screen" width="300" loading="lazy"></a></figure>
+    <figure><figcaption><b>17. Writing stats</b><span>Most used mode, minutes and longest streak.</span></figcaption><a href="images/writing-stats.png"><img src="images/writing-stats.png" alt="Writing stats screen" width="300" loading="lazy"></a></figure>
   </div>
 </main>
 </body>
