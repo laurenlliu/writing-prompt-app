@@ -72,7 +72,7 @@ button { font: inherit; color: var(--ink); cursor: pointer; }
 .streak { width: 168px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 500; }
 .big { font-family: var(--font-title); font-weight: 700; font-size: 48px; line-height: 1; }
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.tile { aspect-ratio: 1; border: none; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px; }
+.tile { aspect-ratio: 1; border: none; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px; text-align: center; text-decoration: none; color: var(--ink); }
 .tile svg, .chip svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .recent { flex: 1; display: flex; flex-direction: column; gap: 12px; }
 .recent h2 { font-family: var(--font-title); font-size: 22px; margin: 0 0 4px; }
