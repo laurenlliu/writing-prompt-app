@@ -23,8 +23,8 @@
     <p class="muted center">Onboarding questions</p>
 
     <div class="ob-step" data-step="1">
-      <div class="question"><span class="num bg-pink">1</span><h1>What is your main goal you want to accomplish with this app?</h1></div>
-      <label for="ob-goal" class="sr-only">Your main goal</label>
+      <div class="question"><span class="num bg-pink">1</span><h1>What do you like to write about?</h1></div>
+      <label for="ob-goal" class="sr-only">What you like to write about</label>
       <input id="ob-goal" class="line-input" type="text" placeholder="Type here..." autocomplete="off">
     </div>
 
@@ -205,38 +205,31 @@
       <div class="b-tile bg-yellow"><span class="b-label">Favorite entries</span><span aria-hidden="true">›</span></div>
     </div>
 
-    <!-- TEMPORARY: link to the test sign-in screen until the real one is designed -->
-    <a href="#signin" class="link-btn center" id="signin-link">Sign in to save your writing</a>
   </section>
 
-  <!-- ===================== SIGN IN (TEMPORARY, for testing until the real screen is drawn) ===================== -->
-  <section class="screen" data-screen="signin" hidden>
-    <a href="#profile" class="back">‹ go back</a>
-    <h1 class="title center">Sign in</h1>
-    <p class="muted center">Save your writing to an account so it shows up on any phone.</p>
-
-    <div id="signin-out" class="signin-box">
-      <button class="btn bg-pink" id="google-btn">Continue with Google</button>
-      <p class="muted center">or use your email</p>
-      <label for="si-email" class="sr-only">Email</label>
-      <input id="si-email" class="line-input" type="email" placeholder="Email" autocomplete="email">
-      <label for="si-pass" class="sr-only">Password</label>
-      <input id="si-pass" class="line-input" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
-      <div class="row stretch">
-        <button class="btn bg-yellow grow" id="email-in-btn">Sign in</button>
-        <button class="btn bg-orange grow" id="email-new-btn">Create account</button>
-      </div>
-      <button class="link-btn self-center" id="forgot-btn">Forgot password?</button>
+  <!-- ===================== WELCOME (before signing up) ===================== -->
+  <section class="screen center-screen" data-screen="welcome" hidden>
+    <h1 class="title welcome-title">Welcome!</h1>
+    <div class="welcome-btns">
+      <a href="#onboarding" class="btn bg-orange" id="w-onboard">Answer onboarding questions</a>
+      <button class="btn bg-yellow" id="w-explore">Explore app</button>
+      <a href="#signup" class="btn bg-pink" id="w-signin">Sign-in</a>
     </div>
+  </section>
 
-    <div id="signin-in" class="signin-box" hidden>
-      <div class="card bg-yellow center">
-        <p class="muted">Signed in as</p>
-        <p><b id="si-who"></b></p>
-        <p class="muted" id="si-status">Your writing saves to your account automatically.</p>
-      </div>
-      <button class="btn bg-orange" id="sync-btn">Save now</button>
-      <button class="btn bg-pink" id="signout-btn">Sign out</button>
+  <!-- ===================== SIGN-UP / SIGN-IN ===================== -->
+  <section class="screen" data-screen="signup" hidden>
+    <a href="#welcome" class="back">‹ back</a>
+    <h1 class="title center">Sign-up</h1>
+    <div class="signup-box">
+      <label for="su-email" class="sr-only">Email</label>
+      <input id="su-email" class="line-input" type="email" placeholder="Email" autocomplete="email">
+      <label for="su-pass" class="sr-only">Password</label>
+      <input id="su-pass" class="line-input" type="password" placeholder="Password" autocomplete="current-password">
+      <p class="su-error" id="su-error" role="alert" hidden></p>
+      <p class="center muted su-or">or<br>sign up with</p>
+      <button class="btn bg-pink su-btn" id="su-google">Google</button>
+      <button class="btn outline su-btn" id="su-email-btn">E-mail</button>
     </div>
   </section>
 

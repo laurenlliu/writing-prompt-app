@@ -2,7 +2,7 @@
 // Writing Prompt App
 // One page with several screens. The part after # in the address decides
 // which screen shows: #onboarding, #home, #choose, #prompt, #write, #done,
-// #profile, #entries, #stats.
+// #profile, #entries, #stats, #welcome, #signup.
 // Everything is saved in this phone's browser (localStorage).
 // =====================================================================
 (function () {
@@ -10,18 +10,20 @@
 
   // ---------- Rules you can change ----------
   const LEVELS = {
-    easy:   { label: 'Easy',   bankSize: 4, minWords: 0,   minutes: 0 },
-    medium: { label: 'Medium', bankSize: 6, minWords: 100, minutes: 0 },
-    hard:   { label: 'Hard',   bankSize: 8, minWords: 150, minutes: 10 }
+    easy:   { label: 'Easy',   bankSize: 4, minWords: 200, minutes: 15 },
+    medium: { label: 'Medium', bankSize: 6, minWords: 350, minutes: 10 },
+    hard:   { label: 'Hard',   bankSize: 8, minWords: 550, minutes: 7 }
   };
+  // Complete daily challenge: everyone gets the same prompt each day (from data.js)
+  const DAILY = { label: 'Daily challenge', bankSize: 4, bank: 'easy', minWords: 300, minutes: 0 };
   const MIN_BANK_WORDS_USED = 3;   // must use at least this many word bank words to finish
   const RESPINS_PER_DAY = 3;       // how many times you can re-spin a prompt each day
   // AI prompts: paste the Cloudflare Worker's address here (see SETUP-AI.md).
   // Leave it empty to use only the prompts written in data.js.
   const AI_PROMPT_URL = 'https://writing-prompts.laurenercs.workers.dev';
   const AI_PROMPTS_PER_DAY = 15;   // after this many, the app uses the prompts in data.js
-  // Extras Allison hasn't designed yet: the test sign-in screen, the prompt popup,
-  // the re-spins-left counter, word definitions and pop-up messages.
+  // Extras Allison hasn't designed yet: the re-spins-left counter, word definitions,
+  // the "writing a prompt" text and pop-up messages.
   // false hides them all (for demos). true turns them back on (for testing).
   const SHOW_EXTRAS = false;
   // Status badge by number of entries written
@@ -114,15 +116,16 @@
 
   // ---------- The current challenge (restored if there is a saved draft) ----------
   const state = Object.assign(
-    { level: 'easy', promptType: 'normal', bank: 'easy', prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 },
+    { level: 'easy', promptType: 'normal', bank: 'easy', daily: false, prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 },
     load(KEYS.draft, {})
   );
   function saveDraft() {
     save(KEYS.draft, {
-      level: state.level, promptType: state.promptType, bank: state.bank, prompt: state.prompt,
+      level: state.level, promptType: state.promptType, bank: state.bank, daily: state.daily, prompt: state.prompt,
       words: state.words, text: state.text, secondsLeft: state.secondsLeft, secondsSpent: state.secondsSpent
     });
   }
+  const rules = () => (state.daily ? DAILY : LEVELS[state.level]);   // the rules for the current challenge
   function usedWords() {
     return state.words.filter((w) => new RegExp('\\b' + escapeRe(w) + '[a-z]*', 'i').test(state.text));
   }
@@ -131,14 +134,17 @@
   const screens = {
     onboarding: renderOnboarding, home: renderHome, choose: renderChoose, prompt: renderPrompt,
     write: renderWrite, done: function () {}, profile: renderProfile, entries: renderEntries,
-    stats: renderStats, signin: renderSignin
+    stats: renderStats, welcome: function () {}, signup: renderSignup
   };
+  const START_SCREENS = ['welcome', 'onboarding', 'signup'];   // allowed before the app is set up
   function route() {
     const parts = (location.hash || '#home').slice(1).split('/');
     let name = parts[0];
     const arg = parts[1];
-    if (!getProfile() && name !== 'onboarding') { location.replace('#onboarding'); return; }  // first time: onboarding
-    if (!screens[name] || (name === 'signin' && !SHOW_EXTRAS)) name = 'home';
+    if (name === 'signin') name = 'signup';
+    if (!getProfile() && !START_SCREENS.includes(name)) { location.replace('#welcome'); return; }  // first time: welcome screen
+    if (name === 'welcome' && getProfile()) name = 'home';
+    if (!screens[name]) name = 'home';
     if ((name === 'prompt' || name === 'write') && !state.prompt) name = 'choose';
     $$('[data-screen]').forEach((s) => { s.hidden = s.dataset.screen !== name; });
     if (name !== 'write') stopTicker();
@@ -150,53 +156,65 @@
   function go(name) { if (location.hash === '#' + name) route(); else location.hash = name; }
   window.addEventListener('hashchange', route);
 
-  // ===================== SIGN IN (temporary test screen) =====================
-  // Uses cloud.js. Replace this screen once the real sign-in screen is designed.
-  let cloudHooked = false;
-  function cloudReady() {
-    if (!window.Cloud || !Cloud.ready) { toast('Still connecting, try again in a second.'); return false; }
-    return true;
-  }
-  function authError(e) {
-    const msgs = {
-      'auth/invalid-email': 'That email doesn\'t look right.',
-      'auth/missing-password': 'Type a password first.',
-      'auth/weak-password': 'Passwords need at least 6 characters.',
-      'auth/email-already-in-use': 'That email already has an account. Tap Sign in instead.',
-      'auth/invalid-credential': 'Wrong email or password.',
-      'auth/wrong-password': 'Wrong email or password.',
-      'auth/user-not-found': 'No account with that email. Tap Create account.',
-      'auth/popup-closed-by-user': 'Sign in was closed before finishing.',
-      'auth/too-many-requests': 'Too many tries. Wait a minute and try again.'
-    };
-    toast(msgs[e && e.code] || ('Something went wrong: ' + ((e && e.code) || e)));
-  }
-  function renderSignin() {
-    hookCloud();
-    const u = window.Cloud && Cloud.user;
-    $('#signin-out').hidden = !!u;
-    $('#signin-in').hidden = !u;
-    if (u) $('#si-who').textContent = u.email || u.displayName || 'your account';
-  }
-  function hookCloud() {
-    if (window.Cloud && !cloudHooked) { cloudHooked = true; Cloud.onChange(() => { if (location.hash === '#signin') renderSignin(); updateSigninLink(); }); }
-  }
-  function updateSigninLink() {
-    hookCloud();
-    const u = window.Cloud && Cloud.user;
-    $('#signin-link').textContent = u ? 'Signed in as ' + (u.email || 'you') : 'Sign in to save your writing';
-  }
-  const emailVals = () => [$('#si-email').value.trim(), $('#si-pass').value];
-  $('#google-btn').addEventListener('click', () => { if (cloudReady()) Cloud.signInWithGoogle().then(() => toast('Signed in!')).catch(authError); });
-  $('#email-in-btn').addEventListener('click', () => { if (cloudReady()) Cloud.signInWithEmail(...emailVals()).then(() => toast('Signed in!')).catch(authError); });
-  $('#email-new-btn').addEventListener('click', () => { if (cloudReady()) Cloud.createAccount(...emailVals()).then(() => toast('Account created!')).catch(authError); });
-  $('#forgot-btn').addEventListener('click', () => {
-    const email = $('#si-email').value.trim();
-    if (!email) { toast('Type your email first, then tap Forgot password.'); return; }
-    if (cloudReady()) Cloud.resetPassword(email).then(() => toast('Check your email for a reset link.')).catch(authError);
+  // ===================== WELCOME =====================
+  // Explore app: use the app without an account and skip onboarding
+  $('#w-explore').addEventListener('click', () => {
+    save(KEYS.profile, Object.assign(getProfile() || {}, { explored: true }));
+    go('home');
   });
-  $('#sync-btn').addEventListener('click', () => { if (cloudReady()) Cloud.save().then(() => toast('Saved to your account.')).catch(authError); });
-  $('#signout-btn').addEventListener('click', () => { if (cloudReady()) Cloud.signOut().then(() => toast('Signed out. Your writing is still on this phone.')).catch(authError); });
+
+  // ===================== SIGN-UP / SIGN-IN (uses cloud.js) =====================
+  const hasAnswers = (p) => Boolean(p && (p.goal || (p.topics && p.topics.length)));
+  function showSignupError(msg) { const el = $('#su-error'); el.textContent = msg || ''; el.hidden = !msg; }
+  function renderSignup() { showSignupError(''); hookCloud(); }
+  let cloudHooked = false;
+  function hookCloud() {
+    if (!window.Cloud || cloudHooked) return;
+    cloudHooked = true;
+    // After signing in (and loading anything saved in the account), go to Home,
+    // or to onboarding if this account hasn't answered the questions yet.
+    Cloud.onChange((u) => {
+      if (u && location.hash === '#signup') go(hasAnswers(getProfile()) ? 'home' : 'onboarding');
+    });
+  }
+  function authMessage(e) {
+    const msgs = {
+      'auth/invalid-email': "That email doesn't look right.",
+      'auth/missing-password': 'Type a password first.',
+      'auth/missing-email': 'Type your email first.',
+      'auth/weak-password': 'Passwords need at least 6 characters.',
+      'auth/email-already-in-use': 'Wrong password for that email.',
+      'auth/wrong-password': 'Wrong password for that email.',
+      'auth/popup-closed-by-user': 'Google sign-in was closed before finishing.',
+      'auth/too-many-requests': 'Too many tries. Wait a minute and try again.',
+      'auth/network-request-failed': 'No internet connection.'
+    };
+    return msgs[e && e.code] || 'Something went wrong. Try again.';
+  }
+  function cloudReady() {
+    if (window.Cloud && Cloud.ready) return true;
+    showSignupError('Still connecting. Try again in a second.');
+    return false;
+  }
+  $('#su-google').addEventListener('click', () => {
+    showSignupError('');
+    if (cloudReady()) Cloud.signInWithGoogle().catch((e) => showSignupError(authMessage(e)));
+  });
+  // E-mail: signs in if the account exists, or creates it if it doesn't
+  $('#su-email-btn').addEventListener('click', async () => {
+    showSignupError('');
+    const email = $('#su-email').value.trim(), pass = $('#su-pass').value;
+    if (!email) { showSignupError('Type your email first.'); return; }
+    if (!pass) { showSignupError('Type a password first.'); return; }
+    if (!cloudReady()) return;
+    try {
+      await Cloud.signInWithEmail(email, pass);
+    } catch (e) {
+      if (['auth/invalid-credential', 'auth/user-not-found', 'auth/invalid-login-credentials'].includes(e.code)) {
+        try { await Cloud.createAccount(email, pass); } catch (e2) { showSignupError(authMessage(e2)); }
+      } else showSignupError(authMessage(e));
+    }
+  });
 
   // ===================== ONBOARDING =====================
   const ob = { step: 1, goal: '', topics: [], helpers: [] };
@@ -232,7 +250,7 @@
   $('#ob-back').addEventListener('click', () => { if (ob.step > 1) { ob.step--; showObStep(); } });
   $('#ob-next').addEventListener('click', () => {
     if (ob.step < 3) { ob.step++; showObStep(); return; }
-    const first = !getProfile();
+    const first = !hasAnswers(getProfile());
     const p = Object.assign(getProfile() || {}, { goal: ob.goal.trim(), topics: ob.topics.slice(), helpers: ob.helpers.slice() });
     save(KEYS.profile, p);
     ob.step = 1; ob.loaded = false;
@@ -245,8 +263,6 @@
     $('#streak-count').textContent = streaks(entries).current;
 
     const hasDraft = Boolean(state.prompt);
-    const daily = $('#daily-btn');
-    daily.setAttribute('href', hasDraft ? '#write' : '#choose');
     $('#write-tab').setAttribute('href', hasDraft ? '#write' : '#choose');
 
     const list = $('#recent-list');
@@ -256,12 +272,29 @@
       : '';
   }
 
+  // Complete daily challenge: the same prompt for everyone today, 300 word minimum
+  function dailyPrompt() {
+    const pool = Object.keys(PROMPTS).flatMap((t) => PROMPTS[t].normal || []);
+    const d = new Date(); const dayNumber = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+    return pool[dayNumber % pool.length];
+  }
+  $('#daily-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (state.text) { go('write'); return; }   // finish the story in progress first
+    Object.assign(state, { daily: true, promptType: 'normal', prompt: dailyPrompt(), text: '', secondsSpent: 0 });
+    state.words = shuffle(WORD_BANKS[DAILY.bank]).slice(0, DAILY.bankSize);
+    state.secondsLeft = DAILY.minutes * 60;
+    saveDraft();
+    go('prompt');
+  });
+
   // ===================== MAKE A CHOICE =====================
   function renderChoose() {
     $$('.opt').forEach((b) => b.setAttribute('aria-pressed', String(state[b.dataset.group] === b.dataset.value)));
   }
   $$('.opt').forEach((b) => b.addEventListener('click', () => { state[b.dataset.group] = b.dataset.value; renderChoose(); }));
   function startWriting() {
+    state.daily = false;
     const L = LEVELS[state.level];
     state.words = shuffle(WORD_BANKS[state.bank]).slice(0, L.bankSize);
     state.secondsLeft = L.minutes * 60;
@@ -300,7 +333,8 @@
   function respinsLeft() { const r = load(KEYS.respins, null); return r && r.date === dayKey() ? r.left : RESPINS_PER_DAY; }
   function renderPrompt() {
     const type = state.promptType === 'challenge' ? 'Challenge mode' : 'Normal';
-    $('#prompt-label').textContent = type + ' prompt (' + LEVELS[state.level].label.toLowerCase() + ')';
+    $('#prompt-label').textContent = state.daily ? DAILY.label : type + ' prompt (' + LEVELS[state.level].label.toLowerCase() + ')';
+    $('#respin-btn').hidden = state.daily;   // everyone gets the same daily prompt, so no re-spins
     $('#prompt-text').textContent = state.loadingPrompt ? (SHOW_EXTRAS ? 'Writing a prompt for you...' : '') : state.prompt;
     const left = respinsLeft();
     $('#respin-btn').disabled = left <= 0 || state.loadingPrompt;
@@ -353,7 +387,7 @@
   function renderWrite() {
     if (story.value !== state.text) story.value = state.text;
     updateWrite();
-    $('#timer').hidden = LEVELS[state.level].minutes <= 0;
+    $('#timer').hidden = rules().minutes <= 0;
     renderTimer();
     startTicker();
   }
@@ -371,7 +405,7 @@
     if (tickId) return;
     tickId = setInterval(() => {
       state.secondsSpent += 1;
-      if (LEVELS[state.level].minutes > 0 && state.secondsLeft > 0) {
+      if (rules().minutes > 0 && state.secondsLeft > 0) {
         state.secondsLeft -= 1;
         renderTimer();
         if (state.secondsLeft === 0) toast("Time's up! Finish your last sentence and tap Done writing.");
@@ -386,7 +420,7 @@
   $('#done-btn').addEventListener('click', () => {
     const wc = countWords(state.text);
     const used = usedWords();
-    const L = LEVELS[state.level];
+    const L = rules();
     if (used.length < MIN_BANK_WORDS_USED) {
       toast('Use at least ' + MIN_BANK_WORDS_USED + ' word bank words before you finish (' + used.length + ' so far).');
       return;
@@ -398,22 +432,20 @@
     const entries = getEntries();
     entries.push({
       date: dayKey(), finishedAt: new Date().toISOString(),
-      level: state.level, promptType: state.promptType, bank: state.bank,
+      level: state.daily ? 'daily' : state.level, promptType: state.promptType, bank: state.daily ? DAILY.bank : state.bank,
       prompt: state.prompt, words: state.words, usedWords: used,
       text: state.text, wordCount: wc, minutes: Math.max(1, Math.round(state.secondsSpent / 60)), favorite: false
     });
     save(KEYS.entries, entries);
     remove(KEYS.draft);
-    forgetPrompt();   // finished, so the next Start writing gets a new prompt
-    Object.assign(state, { prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 });
+    if (!state.daily) forgetPrompt();   // finished, so the next Start writing gets a new prompt
+    Object.assign(state, { daily: false, prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 });
     stopTicker();
     go('done');
   });
 
   // ===================== PROFILE =====================
   function renderProfile() {
-    $('#signin-link').hidden = !SHOW_EXTRAS;
-    updateSigninLink();
     const entries = getEntries();
     const p = getProfile() || {};
     const s = streaks(entries);
@@ -450,7 +482,7 @@
 
   // ===================== SEE PAST ENTRIES =====================
   let sortBy = 'date';
-  const LEVEL_ORDER = { easy: 0, medium: 1, hard: 2 };
+  const LEVEL_ORDER = { easy: 0, medium: 1, hard: 2, daily: 3 };
   function renderEntries() {
     let list = getEntries().map((e, i) => ({ e, i }));
     if (sortBy === 'date') list.sort((a, b) => b.i - a.i);
@@ -475,7 +507,7 @@
   function renderStats() {
     const entries = getEntries();
     const counts = { easy: 0, medium: 0, hard: 0 };
-    entries.forEach((e) => { counts[e.level]++; });
+    entries.forEach((e) => { if (e.level in counts) counts[e.level]++; });
     const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
     $('#s-mode').textContent = entries.length ? LEVELS[top].label : '';
     const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
@@ -493,9 +525,8 @@
     $('#word-grid').innerHTML = state.words.map((w) =>
       '<button class="word' + (used.includes(w) ? ' used' : '') + '" data-word="' + escapeHtml(w) + '" aria-pressed="' + (w === selected) + '">' + escapeHtml(w) + '</button>').join('');
   }
-  // TEMPORARY prompt popup until the real one is drawn
+  // Tap Prompt to see the prompt again (Allison: "when user clicks prompt, show prompt")
   $('#prompt-btn').addEventListener('click', () => {
-    if (!SHOW_EXTRAS) return;
     $('#popup-prompt-text').textContent = state.prompt;
     openPopup('#prompt-popup');
   });
@@ -538,5 +569,7 @@
   }));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePopups(); $('#sort-menu').hidden = true; } });
 
+  hookCloud();
+  window.addEventListener('load', hookCloud);   // cloud.js loads after this file
   route();
 })();

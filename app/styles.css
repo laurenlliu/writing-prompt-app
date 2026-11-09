@@ -205,7 +205,12 @@ a.tile { text-decoration: none; }
 .word-def i { color: var(--muted); margin-left: 4px; }
 .word-def p { margin: 6px 0 0; }
 
-/* ---------- Sign in (temporary test screen) ---------- */
-.signin-box { display: flex; flex-direction: column; gap: 16px; }
-.signin-box .card p { margin: 4px 0; }
-#signin-link { align-self: center; color: var(--muted); font-size: 15px; text-decoration: underline; }
+/* ---------- Welcome and sign-up ---------- */
+.welcome-title { font-size: 44px; margin-bottom: 40px; }
+.welcome-btns { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+.welcome-btns .btn { width: 230px; }
+.signup-box { display: flex; flex-direction: column; gap: 18px; align-items: center; margin-top: 24px; }
+.su-or { margin: 8px 0 0; line-height: 1.4; }
+.su-btn { width: 200px; }
+.btn.outline { background: var(--white); border: 1.5px solid var(--ink); }
+.su-error { margin: 0; color: var(--pink-deep); font-weight: 700; text-align: center; }

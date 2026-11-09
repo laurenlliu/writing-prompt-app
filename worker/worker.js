@@ -81,7 +81,7 @@ export default {
       type === 'challenge'
         ? 'Make it a challenge prompt with a fun twist or rule, like writing from an object\'s point of view or using only dialogue.'
         : 'Make it a normal, everyday prompt that is easy to start.',
-      goal ? `The writer's goal is: "${goal}". Let it inspire the prompt if it fits.` : '',
+      goal ? `The writer likes to write about: "${goal}". Make the prompt about this subject, in the style of the topic above.` : '',
       avoid ? `Do not repeat this prompt: "${avoid}".` : ''
     ].filter(Boolean).join(' ');
 
