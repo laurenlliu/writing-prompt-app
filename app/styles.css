@@ -5,6 +5,7 @@
   --pink: #eea9bc;
   --pink-deep: #d9798f;   /* underline for used word bank words */
   --cream: #fbf7ee;       /* background */
+  --page: #e9dcc6;        /* around the app on a computer */
   --ink: #3a2e2a;         /* text */
   --muted: #7a6a62;       /* lighter text */
   --white: #ffffff;
@@ -21,6 +22,13 @@ button { font: inherit; color: var(--ink); cursor: pointer; }
 :focus-visible { outline: 3px solid var(--pink-deep); outline-offset: 2px; }
 
 #app { max-width: 430px; margin: 0 auto; }
+/* On a computer or tablet, the app sits on a darker background like a phone screen.
+   On a phone it fills the whole screen as usual. */
+@media (min-width: 520px) {
+  html, body { background: var(--page); }
+  #app { background: var(--cream); margin: 24px auto; border-radius: 32px; box-shadow: 0 4px 24px rgba(58, 46, 42, 0.14); overflow: hidden; }
+  .screen { min-height: calc(100dvh - 48px); }
+}
 
 /* ---------- Screens ---------- */
 .screen {
