@@ -161,11 +161,20 @@ a.tile { text-decoration: none; }
 .pages span.on { font-weight: 700; }
 
 /* ---------- Profile ---------- */
-.bento { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 92px; gap: 12px; }
-.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.trio .b-tile { height: 96px; justify-content: space-between; }
+.bento {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 76px 76px 64px 84px 112px;
+  grid-template-areas: "pic streak" "onb streak" "ent levels" "stat levels" "bottom fav";
+}
+.area-pic { grid-area: pic; } .area-onb { grid-area: onb; } .area-streak { grid-area: streak; }
+.area-ent { grid-area: ent; } .area-stat { grid-area: stat; } .area-levels { grid-area: levels; }
+.area-bottom { grid-area: bottom; } .area-fav { grid-area: fav; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.center-tile { align-items: center; text-align: center; }
+.b-tile.entries-tile { flex-direction: row; align-items: baseline; justify-content: center; gap: 8px; }
+.area-streak { gap: 2px; }
 .b-tile { border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: center; gap: 4px; text-decoration: none; overflow: hidden; }
-.tall-2 { grid-row: span 2; }
 .b-label { font-size: 13px; font-weight: 600; line-height: 1.25; }
 .b-small { font-size: 12px; font-weight: 600; color: #5e4e46; }
 .b-big { font-family: var(--font-title); font-weight: 700; font-size: 30px; line-height: 1; }

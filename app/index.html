@@ -171,38 +171,38 @@
     <a href="#home" class="back">‹ go back to home</a>
     <h1 class="title center">Profile</h1>
 
+    <!-- Laid out like Allison's drawing: two columns, with the streak, levels and favorites on the right -->
     <div class="bento">
-      <label class="b-tile bg-yellow photo-tile">
+      <label class="b-tile bg-yellow photo-tile area-pic">
         <span class="avatar" id="avatar"></span>
         <span class="b-label">Change picture</span>
         <input type="file" accept="image/*" id="photo-input" class="sr-only">
       </label>
-      <div class="b-tile bg-orange tall-2">
-        <span class="b-label">Current streak</span>
+      <a href="#onboarding" class="b-tile bg-pink center-tile area-onb"><span class="b-label">Change onboarding answers</span></a>
+      <div class="b-tile bg-orange center-tile area-streak">
         <span class="b-big xl" id="p-streak">0</span>
+        <span class="b-label">Current streak</span>
         <span class="b-small">vs.</span>
+        <span class="b-big xl" id="p-longest">0</span>
         <span class="b-label">Longest streak</span>
-        <span class="b-big" id="p-longest">0</span>
       </div>
-      <a href="#onboarding" class="b-tile bg-pink"><span class="b-label">Change onboarding answers</span></a>
-      <div class="b-tile bg-orange">
-        <span class="b-big" id="p-entries">0</span>
+      <div class="b-tile bg-orange center-tile entries-tile area-ent">
+        <span class="b-big md" id="p-entries">0</span>
         <span class="b-label">entries written</span>
       </div>
-      <div class="b-tile bg-pink tall-2">
-        <span class="b-label">Levels done</span>
-        <span class="levels" id="p-levels"></span>
-      </div>
-      <div class="b-tile bg-yellow">
+      <div class="b-tile bg-yellow center-tile area-stat">
         <span class="b-small">Current status</span>
         <span class="status" id="p-status">Novice</span>
       </div>
-    </div>
-
-    <div class="trio">
-      <a href="#entries" class="b-tile bg-orange"><span class="b-label">See past entries</span><span aria-hidden="true">›</span></a>
-      <div class="b-tile bg-pink"><span class="b-big md" id="p-words">0</span><span class="b-label">words typed</span></div>
-      <div class="b-tile bg-yellow"><span class="b-label">Favorite entries</span><span aria-hidden="true">›</span></div>
+      <div class="b-tile bg-pink center-tile area-levels">
+        <span class="b-label">Levels done</span>
+        <span class="levels" id="p-levels"></span>
+      </div>
+      <div class="pair area-bottom">
+        <a href="#entries" class="b-tile bg-orange center-tile"><span class="b-label">See past entries</span></a>
+        <div class="b-tile bg-pink center-tile"><span class="b-big md" id="p-words">0</span><span class="b-label">words typed</span></div>
+      </div>
+      <div class="b-tile bg-yellow center-tile area-fav"><span class="b-label">Favorite entries</span></div>
     </div>
 
   </section>
