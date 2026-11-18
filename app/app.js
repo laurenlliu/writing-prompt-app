@@ -555,15 +555,9 @@
   // ===================== WRITING STATS =====================
   function renderStats() {
     const entries = getEntries();
-    const counts = { easy: 0, medium: 0, hard: 0 };
-    entries.forEach((e) => { if (e.level in counts) counts[e.level]++; });
-    const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
-    $('#s-mode').textContent = entries.length ? LEVELS[top].label : '';
-    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
-    const since = dayKey(weekAgo);
-    $('#s-minutes').textContent = entries.filter((e) => e.date >= since).reduce((sum, e) => sum + (e.minutes || 0), 0);
+    $('#s-minutes').textContent = entries.reduce((sum, e) => sum + (e.minutes || 0), 0);   // all your writing time
     const longest = streaks(entries).longest;
-    $('#s-longest').textContent = longest + (longest === 1 ? ' day' : ' days');
+    $('#s-longest').textContent = longest;
   }
 
   // ---------- Popups ----------

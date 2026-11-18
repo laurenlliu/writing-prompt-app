@@ -271,10 +271,11 @@
   <!-- ===================== WRITING STATS ===================== -->
   <section class="screen" data-screen="stats" hidden>
     <h1 class="title center stats-title">Writing stats</h1>
-    <div class="stat-row"><span>Most used mode</span><b id="s-mode">None yet</b></div>
-    <div class="stat-row"><span>This week's ratings</span><b id="s-ratings"></b></div>
-    <div class="card bg-pink stat-card"><span class="b-big lg" id="s-minutes">0</span><span class="b-label">minutes writing this week</span></div>
-    <div class="card bg-yellow stat-card"><span class="b-big lg" id="s-longest">0 days</span><span class="b-label">longest streak</span></div>
+    <!-- Laid out like Allison's drawing. The arrows don't open anything yet. -->
+    <div class="stat-link">Most used mode <span class="stat-arrow" aria-hidden="true">›</span></div>
+    <div class="stat-link">This week's ratings <span class="stat-arrow" aria-hidden="true">›</span></div>
+    <div class="stat-box bg-pink"><span class="b-big lg" id="s-minutes">0</span><span class="b-label">minutes writing</span></div>
+    <div class="stat-box bg-yellow"><span class="b-big lg" id="s-longest">0</span><span class="b-label">longest streak</span></div>
     <a href="#entries" class="btn bg-orange push-down self-start">‹ go back</a>
   </section>
 
