@@ -251,4 +251,4 @@ a.tile { text-decoration: none; }
 .clover .unfav { cursor: pointer; }
 .clover .unfav rect, .clover .unfav path { fill: #f3e27a; stroke: #b8a13a; stroke-width: 1.5; }
 .fav-empty { display: flex; flex-direction: column; align-items: center; gap: 22px; margin-top: 60px; }
-.fav-empty-text { margin: 0; font-size: 26px; line-height: 1.3; }
+.fav-empty-text { margin: 0; font-family: var(--font-title); font-weight: 700; font-size: 26px; line-height: 1.25; }
