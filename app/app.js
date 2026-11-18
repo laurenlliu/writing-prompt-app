@@ -463,33 +463,23 @@
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   function ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
   function longDate(key) { const [Y, M, D] = key.split('-').map(Number); return [MONTHS[M - 1], ordinal(D), String(Y)]; }
-  // A plump heart: narrow where the leaves join in the middle, wide and round at the top
-  const LEAF = 'M0 0 C -6 -10 -19 -25 -32 -40 C -50 -60 -47 -93 -23 -94 C -11 -95 -3 -88 0 -77 C 3 -88 11 -95 23 -94 C 47 -93 50 -60 32 -40 C 19 -25 6 -10 0 0 Z';
-  // Small differences so every clover (and every leaf) looks hand-drawn, not perfectly even.
-  // They're the same every time for the same entry, so the clovers don't jump around.
-  function wobble(seed, n) { const x = Math.sin(seed * 12.9898 + n * 78.233) * 43758.5453; return x - Math.floor(x); }
-  function leafText(angle, dist, lines) {
-    const r = (angle * Math.PI) / 180, x = 110 + Math.sin(r) * dist, y = 100 - Math.cos(r) * dist;
+  const LEAF = 'M0 0 C -24 -24 -45 -42 -45 -65 C -45 -87 -13 -93 0 -73 C 13 -93 45 -87 45 -65 C 45 -42 24 -24 0 0 Z';
+  // Where the middle of each leaf is, so the words and the bookmark sit centered in it
+  function leafCenter(angle) { const r = (angle * Math.PI) / 180; return [100 + Math.sin(r) * 49, 100 - Math.cos(r) * 49]; }
+  function leafText(angle, lines) {
+    const [x, y] = leafCenter(angle);
     const start = y - ((lines.length - 1) * 11) / 2 + 3.5;
     return '<text>' + lines.map((l, i) => '<tspan x="' + x.toFixed(1) + '" y="' + (start + i * 11).toFixed(1) + '">' + escapeHtml(l) + '</tspan>').join('') + '</text>';
   }
   function cloverSvg(e, i) {
-    const seed = i + 1;
-    const tilt = (wobble(seed, 0) - 0.5) * 30;   // the whole clover leans a little left or right
-    const leaf = [-45, 45, 135, 225].map((a, n) => ({
-      angle: a + tilt + (wobble(seed, n + 1) - 0.5) * 12,
-      size: 0.94 + wobble(seed, n + 5) * 0.1
-    }));
-    const leaves = leaf.map((l) => '<path class="leaf" transform="translate(110 100) rotate(' + l.angle.toFixed(1) + ') scale(' + l.size.toFixed(3) + ')" d="' + LEAF + '"/>').join('');
-    const bm = leaf[1], br = (bm.angle * Math.PI) / 180, bx = 110 + Math.sin(br) * 60 * bm.size, by = 100 - Math.cos(br) * 60 * bm.size;
-    const bookmark = '<g class="unfav" data-unfav="' + i + '" role="button" aria-label="Remove from favorites" transform="translate(' + (bx - 9).toFixed(1) + ' ' + (by - 12).toFixed(1) + ') scale(1.15)">' +
+    const leaves = [-45, 45, 135, 225].map((a) => '<path class="leaf" transform="translate(100 100) rotate(' + a + ')" d="' + LEAF + '"/>').join('');
+    const [bx, by] = leafCenter(45);
+    const bookmark = '<g class="unfav" data-unfav="' + i + '" role="button" aria-label="Remove from favorites" transform="translate(' + (bx - 8).toFixed(1) + ' ' + (by - 10).toFixed(1) + ')">' +
       '<path d="M0 0 H16 V22 L8 16 L0 22 Z"/></g>';
-    const stem = 'M110 100 C 150 ' + (130 + tilt).toFixed(0) + ' 190 ' + (150 + tilt).toFixed(0) + ' 234 ' + (150 + tilt * 1.5).toFixed(0);
-    return '<div class="clover"><svg viewBox="0 -4 240 222" aria-label="Favorite entry from ' + escapeHtml(longDate(e.date).join(' ')) + '">' +
-      '<path class="stem" d="' + stem + '"/><path class="stem-in" d="' + stem + '"/>' + leaves +
-      leafText(leaf[0].angle, 54 * leaf[0].size, [String(e.wordCount || 0), 'words', 'typed']) + bookmark +
-      leafText(leaf[3].angle, 54 * leaf[3].size, (MODE_NAMES[e.level] || e.level).split(' ')) +
-      leafText(leaf[2].angle, 54 * leaf[2].size, longDate(e.date)) + '</svg></div>';
+    return '<div class="clover"><svg viewBox="0 -2 238 204" aria-label="Favorite entry from ' + escapeHtml(longDate(e.date).join(' ')) + '">' +
+      '<path class="stem" d="M104 104 C 150 112 190 104 232 92"/><path class="stem-in" d="M104 104 C 150 112 190 104 232 92"/>' + leaves +
+      leafText(-45, [String(e.wordCount || 0), 'words', 'typed']) + bookmark +
+      leafText(225, (MODE_NAMES[e.level] || e.level).split(' ')) + leafText(135, longDate(e.date)) + '</svg></div>';
   }
   function renderFavorites() {
     const favs = getEntries().map((e, i) => ({ e, i })).filter((x) => x.e.favorite).reverse();
