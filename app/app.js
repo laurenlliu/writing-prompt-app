@@ -187,7 +187,8 @@
       'auth/wrong-password': 'Wrong password for that email.',
       'auth/popup-closed-by-user': 'Google sign-in was closed before finishing.',
       'auth/too-many-requests': 'Too many tries. Wait a minute and try again.',
-      'auth/network-request-failed': 'No internet connection.'
+      'auth/network-request-failed': 'No internet connection.',
+      'app/username-taken': 'That username is taken. Try another one.'
     };
     return msgs[e && e.code] || 'Something went wrong. Try again.';
   }
@@ -200,19 +201,33 @@
     showSignupError('');
     if (cloudReady()) Cloud.signInWithGoogle().catch((e) => showSignupError(authMessage(e)));
   });
-  // E-mail: signs in if the account exists, or creates it if it doesn't
+  // E-mail button:
+  //   username + password (email left empty)  -> signs in with your username
+  //   username + email + password             -> signs in if the account exists, or makes a new one
+  const USERNAME_OK = /^[A-Za-z0-9_]{3,20}$/;
   $('#su-email-btn').addEventListener('click', async () => {
     showSignupError('');
-    const email = $('#su-email').value.trim(), pass = $('#su-pass').value;
-    if (!email) { showSignupError('Type your email first.'); return; }
+    const name = $('#su-user').value.trim(), email = $('#su-email').value.trim(), pass = $('#su-pass').value;
+    if (!name && !email) { showSignupError('Type your username first.'); return; }
     if (!pass) { showSignupError('Type a password first.'); return; }
     if (!cloudReady()) return;
+    if (!email) {
+      try {
+        const found = await Cloud.emailForUsername(name);
+        if (!found) { showSignupError("There's no account with that username."); return; }
+        await Cloud.signInWithEmail(found, pass);
+      } catch (e) {
+        showSignupError(['auth/invalid-credential', 'auth/wrong-password', 'auth/invalid-login-credentials'].includes(e.code) ? 'Wrong password for that username.' : authMessage(e));
+      }
+      return;
+    }
     try {
       await Cloud.signInWithEmail(email, pass);
     } catch (e) {
-      if (['auth/invalid-credential', 'auth/user-not-found', 'auth/invalid-login-credentials'].includes(e.code)) {
-        try { await Cloud.createAccount(email, pass); } catch (e2) { showSignupError(authMessage(e2)); }
-      } else showSignupError(authMessage(e));
+      if (!['auth/invalid-credential', 'auth/user-not-found', 'auth/invalid-login-credentials'].includes(e.code)) { showSignupError(authMessage(e)); return; }
+      if (!name) { showSignupError('Pick a username first.'); return; }
+      if (!USERNAME_OK.test(name)) { showSignupError('Usernames are 3 to 20 letters, numbers or _.'); return; }
+      try { await Cloud.createAccountWithUsername(name, email, pass); } catch (e2) { showSignupError(authMessage(e2)); }
     }
   });
 
@@ -540,7 +555,7 @@
     if (sortBy === 'words') list.sort((a, b) => b.e.wordCount - a.e.wordCount);
     $$('#sort-menu button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.sort === sortBy)));
     $('#entry-grid').innerHTML = list.map(({ e }) =>
-      '<div class="entry-card"><span class="page-box"><span class="preview">' + escapeHtml(e.text.slice(0, 160)) +
+      '<div class="entry-card"><span class="page-box"><span class="preview"><span class="preview-text">' + escapeHtml(e.text.slice(0, 160)) + '</span>' +
       '</span></span><span class="date">' + escapeHtml(dateLabel(e.date)) + '</span></div>').join('');
   }
   $('#sort-btn').addEventListener('click', () => {

@@ -24,6 +24,8 @@
   let auth = null, db = null, user = null, ready = false;
   const listeners = [];
 
+  const usernameKey = (name) => name.trim().toLowerCase();   // "Allison" and "allison" are the same username
+
   function loadScript(src) {
     return new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
   }
@@ -91,6 +93,18 @@
     },
     signInWithEmail(email, password) { return auth.signInWithEmailAndPassword(email, password); },
     createAccount(email, password) { return auth.createUserWithEmailAndPassword(email, password); },
+    // Usernames: each one points to the account's email, so you can sign in with username and password
+    async emailForUsername(name) {
+      const snap = await db.collection('usernames').doc(usernameKey(name)).get();
+      return snap.exists ? snap.data().email : null;
+    },
+    async createAccountWithUsername(name, email, password) {
+      if (await this.emailForUsername(name)) { const e = new Error('taken'); e.code = 'app/username-taken'; throw e; }
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      await db.collection('usernames').doc(usernameKey(name)).set({ uid: cred.user.uid, email: cred.user.email });
+      await db.collection('users').doc(cred.user.uid).set({ username: name.trim() }, { merge: true });
+      return cred;
+    },
     resetPassword(email) { return auth.sendPasswordResetEmail(email); },
     signOut() { return auth.signOut(); },
     save: push

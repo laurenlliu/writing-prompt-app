@@ -199,9 +199,10 @@ a.tile { text-decoration: none; }
 .entry-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 /* Like Allison's drawing: a lined page inside a pale yellow box, with the date on a colored tag underneath */
 .entry-card { display: flex; flex-direction: column; text-decoration: none; }
-.entry-card .page-box { background: #f6efcf; border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px; }
-.entry-card .preview { display: block; height: 84px; padding: 6px 7px; background: #fffdf4; border: 1.5px solid var(--ink); border-radius: 3px; font-size: 9px; line-height: 1.45; color: var(--muted); overflow: hidden; }
-.entry-card .date { margin: -2px 2px 0; padding: 5px 2px; border: 1.5px solid var(--ink); border-radius: 3px; font-size: 13px; font-weight: 700; text-align: center; }
+.entry-card .page-box { background: #f6efcf; border: 1.5px solid var(--ink); border-radius: 6px 6px 0 0; padding: 8px 8px 0; }
+.entry-card .preview { display: block; height: 92px; padding: 6px 7px; box-sizing: border-box; background: #fffdf4; border: 1.5px solid var(--ink); border-bottom: none; border-radius: 3px 3px 0 0; font-size: 9px; line-height: 1.45; color: var(--muted); overflow: hidden; }
+.entry-card .preview-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden; }
+.entry-card .date { margin: -1.5px 0 0; padding: 5px 2px; border: 1.5px solid var(--ink); border-radius: 3px; font-size: 13px; font-weight: 700; text-align: center; }
 .entry-card:nth-child(odd) .date { background: var(--orange); }
 .entry-card:nth-child(even) .date { background: var(--pink); }
 .stats-btn { width: 118px; min-height: 0; padding: 10px 8px; border: 1.5px solid var(--ink); border-radius: 6px; line-height: 1.2; text-align: center; }
