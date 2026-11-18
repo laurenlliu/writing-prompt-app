@@ -2,7 +2,7 @@
 // Writing Prompt App
 // One page with several screens. The part after # in the address decides
 // which screen shows: #onboarding, #home, #choose, #prompt, #write, #done,
-// #profile, #entries, #stats, #welcome, #signup.
+// #profile, #entries, #stats, #favorites, #welcome, #signup.
 // Everything is saved in this phone's browser (localStorage).
 // =====================================================================
 (function () {
@@ -134,7 +134,7 @@
   const screens = {
     onboarding: renderOnboarding, home: renderHome, choose: renderChoose, prompt: renderPrompt,
     write: renderWrite, done: function () {}, profile: renderProfile, entries: renderEntries,
-    stats: renderStats, welcome: function () {}, signup: renderSignup
+    stats: renderStats, favorites: renderFavorites, welcome: function () {}, signup: renderSignup
   };
   const START_SCREENS = ['welcome', 'onboarding', 'signup'];   // allowed before the app is set up
   function route() {
@@ -437,11 +437,59 @@
       text: state.text, wordCount: wc, minutes: Math.max(1, Math.round(state.secondsSpent / 60)), favorite: false
     });
     save(KEYS.entries, entries);
+    lastEntry = entries.length - 1;   // for "Add entry to favorites"
+    $('#fav-btn').disabled = false; $('#fav-btn').textContent = 'Add entry to favorites';
     remove(KEYS.draft);
     if (!state.daily) forgetPrompt();   // finished, so the next Start writing gets a new prompt
     Object.assign(state, { daily: false, prompt: '', words: [], text: '', secondsLeft: 0, secondsSpent: 0 });
     stopTicker();
     go('done');
+  });
+
+  // "You're done writing!" popup: add the story you just finished to your favorites
+  let lastEntry = -1;
+  $('#fav-btn').addEventListener('click', () => {
+    const entries = getEntries();
+    if (!entries[lastEntry]) return;
+    entries[lastEntry].favorite = true;
+    save(KEYS.entries, entries);
+    $('#fav-btn').disabled = true; $('#fav-btn').textContent = 'Added to favorites';
+  });
+
+  // ===================== FAVORITE ENTRIES =====================
+  // Each favorite is a four-leaf clover: words typed, the bookmark (tap it to unfavorite),
+  // the mode and the date.
+  const MODE_NAMES = { easy: 'easy mode', medium: 'medium mode', hard: 'hard mode', daily: 'daily challenge' };
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+  function longDate(key) { const [Y, M, D] = key.split('-').map(Number); return [MONTHS[M - 1], ordinal(D), String(Y)]; }
+  const LEAF = 'M0 -4 C -4 -16 -40 -34 -40 -64 C -40 -86 -12 -92 0 -72 C 12 -92 40 -86 40 -64 C 40 -34 4 -16 0 -4 Z';   // a heart, point toward the middle
+  function leafText(angle, lines) {
+    const r = (angle * Math.PI) / 180, x = 100 + Math.sin(r) * 49, y = 100 - Math.cos(r) * 49;
+    const start = y - ((lines.length - 1) * 11) / 2 + 3.5;
+    return '<text>' + lines.map((l, i) => '<tspan x="' + x.toFixed(1) + '" y="' + (start + i * 11).toFixed(1) + '">' + escapeHtml(l) + '</tspan>').join('') + '</text>';
+  }
+  function cloverSvg(e, i) {
+    const leaves = [-45, 45, 135, 225].map((a) => '<path class="leaf" transform="translate(100 100) rotate(' + a + ')" d="' + LEAF + '"/>').join('');
+    const r = (45 * Math.PI) / 180, bx = 100 + Math.sin(r) * 56, by = 100 - Math.cos(r) * 56;
+    const bookmark = '<g class="unfav" data-unfav="' + i + '" role="button" aria-label="Remove from favorites" transform="translate(' + (bx - 8).toFixed(1) + ' ' + (by - 11).toFixed(1) + ')">' +
+      '<path d="M0 0 H16 V22 L8 16 L0 22 Z"/></g>';
+    return '<div class="clover"><svg viewBox="0 -2 238 204" aria-label="Favorite entry from ' + escapeHtml(longDate(e.date).join(' ')) + '">' +
+      '<path class="stem" d="M104 104 C 150 112 190 104 232 92"/><path class="stem-in" d="M104 104 C 150 112 190 104 232 92"/>' + leaves +
+      leafText(-45, [String(e.wordCount || 0), 'words', 'typed']) + bookmark +
+      leafText(225, (MODE_NAMES[e.level] || e.level).split(' ')) + leafText(135, longDate(e.date)) + '</svg></div>';
+  }
+  function renderFavorites() {
+    const favs = getEntries().map((e, i) => ({ e, i })).filter((x) => x.e.favorite).reverse();
+    $('#clovers').innerHTML = favs.map(({ e, i }) => cloverSvg(e, i)).join('');
+    $('#fav-empty').hidden = favs.length > 0;
+    $('#fav-back').hidden = favs.length === 0;   // her empty-screen drawing has no back link
+  }
+  $('#clovers').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-unfav]');
+    if (!b) return;
+    const entries = getEntries(), i = Number(b.dataset.unfav);
+    if (entries[i]) { entries[i].favorite = false; save(KEYS.entries, entries); renderFavorites(); }
   });
 
   // ===================== PROFILE =====================

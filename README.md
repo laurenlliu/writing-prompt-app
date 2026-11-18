@@ -28,7 +28,10 @@ Only the screens and choices Allison has drawn or confirmed are in the app.
 - **Profile, See past entries (organize by date, mode or word count) and Writing stats.**
 - **Add to Home Screen** and it opens full screen like a real app, even offline. The icon is a placeholder until the logo is drawn.
 
-Not designed yet, so they don't do anything: Explore prompts, Memories, Favorite entries, tapping an old entry and this week's ratings.
+- **You're done writing!** pops up after Done writing, with Go to home and Add entry to favorites.
+- **Favorite entries:** each favorite is a four-leaf clover showing words typed, the mode and the date. Tap the yellow bookmark to unfavorite it.
+
+Not designed yet, so they don't do anything: Explore prompts, Memories, tapping an old entry and this week's ratings.
 
 ## Files
 
@@ -63,10 +66,14 @@ Headings use **Fraunces** and everything else uses **DM Sans** (both free on Goo
 | --- | --- | --- | --- |
 | ![Home](images/home.png) | ![Make a choice](images/make-a-choice.png) | ![Prompt](images/prompt.png) | ![Write](images/write.png) |
 
-| Prompt open | Word bank open | Congrats | Daily challenge |
+| Prompt open | Word bank open | You're done writing | Daily challenge |
 | --- | --- | --- | --- |
-| ![Prompt open](images/write-prompt-open.png) | ![Word bank open](images/write-word-bank-open.png) | ![Congrats](images/challenge-complete.png) | ![Daily challenge](images/daily-challenge.png) |
+| ![Prompt open](images/write-prompt-open.png) | ![Word bank open](images/write-word-bank-open.png) | ![You're done writing](images/done-popup.png) | ![Daily challenge](images/daily-challenge.png) |
 
 | Profile | See past entries | Organize by | Writing stats |
 | --- | --- | --- | --- |
 | ![Profile](images/profile.png) | ![See past entries](images/past-entries.png) | ![Organize by](images/past-entries-organize.png) | ![Writing stats](images/writing-stats.png) |
+
+| Favorite entries | Favorite entries, empty |
+| --- | --- |
+| ![Favorite entries](images/favorites.png) | ![Favorite entries, empty](images/favorites-empty.png) |

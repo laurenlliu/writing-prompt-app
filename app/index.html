@@ -161,9 +161,15 @@
   </section>
 
   <!-- ===================== CHALLENGE COMPLETE ===================== -->
+  <!-- ===================== YOU'RE DONE WRITING (popup after Done writing) ===================== -->
   <section class="screen center-screen" data-screen="done" hidden>
-    <h1 class="title center">Congrats,<br>you've finished<br>today's challenge!</h1>
-    <a href="#home" class="btn bg-pink pill">Return to home</a>
+    <div class="done-box">
+      <h1 class="title center">You're done<br>writing!</h1>
+      <div class="done-btns">
+        <a href="#home" class="btn bg-pink">Go to home</a>
+        <button class="btn bg-orange" id="fav-btn">Add entry to favorites</button>
+      </div>
+    </div>
   </section>
 
   <!-- ===================== PROFILE ===================== -->
@@ -202,7 +208,7 @@
         <a href="#entries" class="b-tile bg-orange center-tile"><span class="b-label">See past entries</span></a>
         <div class="b-tile bg-pink center-tile"><span class="b-big md" id="p-words">0</span><span class="b-label">words typed</span></div>
       </div>
-      <div class="b-tile bg-yellow center-tile area-fav"><span class="b-label">Favorite entries</span></div>
+      <a href="#favorites" class="b-tile bg-yellow center-tile area-fav"><span class="b-label">Favorite entries</span></a>
     </div>
 
   </section>
@@ -231,6 +237,17 @@
       <button class="btn bg-pink su-btn" id="su-google">Google</button>
       <button class="btn outline su-btn" id="su-email-btn">E-mail</button>
     </div>
+  </section>
+
+  <!-- ===================== FAVORITE ENTRIES (each favorite is a four-leaf clover) ===================== -->
+  <section class="screen" data-screen="favorites" hidden>
+    <h1 class="title center">Favorite entries</h1>
+    <div class="clovers" id="clovers"></div>
+    <div class="fav-empty center" id="fav-empty" hidden>
+      <p class="fav-empty-text">No entries<br>selected!</p>
+      <a href="#entries" class="btn bg-pink">See previous entries</a>
+    </div>
+    <a href="#home" class="back push-down" id="fav-back">‹ go back to home</a>
   </section>
 
   <!-- ===================== SEE PAST ENTRIES ===================== -->
