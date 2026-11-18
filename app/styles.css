@@ -11,7 +11,7 @@
   --white: #ffffff;
   --radius: 16px;
   --font-body: 'DM Sans', system-ui, sans-serif;
-  --font-title: 'Fraunces', Georgia, serif;
+  --font-title: 'Source Serif 4', Georgia, serif;   /* titles (Fraunces was swapped out because its f ran into the next letter) */
 }
 
 * { box-sizing: border-box; font-variant-ligatures: no-common-ligatures; }

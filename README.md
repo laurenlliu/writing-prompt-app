@@ -54,7 +54,7 @@ Not designed yet, so they don't do anything: Explore prompts, Memories, tapping 
 | Text (warm brown) | `#3A2E2A` |
 | Light text | `#7A6A62` |
 
-Headings use **Fraunces** and everything else uses **DM Sans** (both free on Google Fonts).
+Headings use **Source Serif 4** and everything else uses **DM Sans** (both free on Google Fonts).
 
 ## Screens
 
