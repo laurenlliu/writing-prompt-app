@@ -236,8 +236,8 @@ a.tile { text-decoration: none; }
 .su-error { margin: 0; color: var(--pink-deep); font-weight: 700; text-align: center; }
 
 /* ---------- You're done writing ---------- */
-/* Like Allison's drawing: a framed box (two outlines) with outlined buttons */
-.done-box { width: 100%; max-width: 320px; background: var(--white); border: 2px solid var(--ink); border-radius: 4px; outline: 2px solid var(--ink); outline-offset: 5px; padding: 26px 22px 24px; display: flex; flex-direction: column; gap: 20px; }
+/* Like Allison's drawing: a yellow box with outlined buttons */
+.done-box { width: 100%; max-width: 320px; background: var(--yellow); border: 2px solid var(--ink); border-radius: 4px; padding: 26px 22px 24px; display: flex; flex-direction: column; gap: 20px; }
 .done-box .title { font-size: 30px; }
 .done-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .done-btns .btn { padding: 8px 10px; font-size: 15px; border: 2px solid var(--ink); border-radius: 4px; }
