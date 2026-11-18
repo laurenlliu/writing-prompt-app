@@ -463,7 +463,8 @@
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   function ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
   function longDate(key) { const [Y, M, D] = key.split('-').map(Number); return [MONTHS[M - 1], ordinal(D), String(Y)]; }
-  const LEAF = 'M0 -4 C -4 -16 -40 -34 -40 -64 C -40 -86 -12 -92 0 -72 C 12 -92 40 -86 40 -64 C 40 -34 4 -16 0 -4 Z';   // a heart, point toward the middle
+  // a heart with its point in the middle; its sides run along the neighboring leaves so they touch
+  const LEAF = 'M0 0 C -24 -24 -45 -42 -45 -65 C -45 -87 -13 -93 0 -73 C 13 -93 45 -87 45 -65 C 45 -42 24 -24 0 0 Z';
   function leafText(angle, lines) {
     const r = (angle * Math.PI) / 180, x = 100 + Math.sin(r) * 49, y = 100 - Math.cos(r) * 49;
     const start = y - ((lines.length - 1) * 11) / 2 + 3.5;
