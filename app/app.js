@@ -540,8 +540,8 @@
     if (sortBy === 'words') list.sort((a, b) => b.e.wordCount - a.e.wordCount);
     $$('#sort-menu button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.sort === sortBy)));
     $('#entry-grid').innerHTML = list.map(({ e }) =>
-      '<div class="entry-card"><span class="preview">' + escapeHtml(e.text.slice(0, 160)) +
-      '</span><span class="date">' + escapeHtml(dateLabel(e.date)) + '</span></div>').join('');
+      '<div class="entry-card"><span class="page-box"><span class="preview">' + escapeHtml(e.text.slice(0, 160)) +
+      '</span></span><span class="date">' + escapeHtml(dateLabel(e.date)) + '</span></div>').join('');
   }
   $('#sort-btn').addEventListener('click', () => {
     const m = $('#sort-menu'); m.hidden = !m.hidden;
