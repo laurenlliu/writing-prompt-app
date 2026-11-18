@@ -477,7 +477,7 @@
     const bookmark = '<g class="unfav" data-unfav="' + i + '" role="button" aria-label="Remove from favorites" transform="translate(' + (bx - 8).toFixed(1) + ' ' + (by - 10).toFixed(1) + ')">' +
       '<path d="M0 0 H16 V22 L8 16 L0 22 Z"/></g>';
     return '<div class="clover"><svg viewBox="0 -2 238 204" aria-label="Favorite entry from ' + escapeHtml(longDate(e.date).join(' ')) + '">' +
-      '<path class="stem" d="M104 104 C 150 112 190 104 232 92"/><path class="stem-in" d="M104 104 C 150 112 190 104 232 92"/>' + leaves +
+      '<path class="stem" d="M100 100 C 150 100 190 96 232 86"/><path class="stem-in" d="M100 100 C 150 100 190 96 232 86"/>' + leaves +
       leafText(-45, [String(e.wordCount || 0), 'words', 'typed']) + bookmark +
       leafText(225, (MODE_NAMES[e.level] || e.level).split(' ')) + leafText(135, longDate(e.date)) + '</svg></div>';
   }
