@@ -74,7 +74,8 @@ button { font: inherit; color: var(--ink); cursor: pointer; }
 .back { align-self: flex-start; min-height: 44px; display: flex; align-items: center; font-weight: 700; text-decoration: none; }
 
 /* ---------- Home ---------- */
-.tabs { display: flex; justify-content: space-between; border-bottom: 1px solid var(--orange); }
+.tabs { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--orange); }
+.tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink); flex-shrink: 0; }   /* the dots between the tabs in Allison's drawing */
 .tab { padding: 12px 4px; font-size: 17px; font-weight: 500; color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent; }
 .tab.is-active { font-weight: 700; color: var(--ink); border-bottom-color: var(--ink); }
 .streak { width: 168px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 500; }
@@ -86,8 +87,8 @@ button { font: inherit; color: var(--ink); cursor: pointer; }
 .recent h2 { font-family: var(--font-title); font-size: 22px; margin: 0 0 4px; }
 .recent-list { display: flex; flex-direction: column; gap: 12px; }
 .recent-row { text-decoration: none; display: flex; justify-content: space-between; align-items: center; min-height: 64px; padding: 0 20px; border-radius: 16px; font-size: 18px; font-weight: 500; }
-.recent-row:nth-child(odd) { background: var(--pink); }
-.recent-row:nth-child(even) { background: var(--orange); }
+.recent-row:nth-child(odd) { background: var(--orange); }
+.recent-row:nth-child(even) { background: var(--pink); }
 
 /* ---------- Make a choice: outlined options that fill in when picked ---------- */
 .group { display: flex; flex-direction: column; gap: 10px; }
